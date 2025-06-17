@@ -1,4 +1,4 @@
-import { dotnet } from './_framework/dotnet.js'
+import { dotnet } from 'https://maschinr.github.io/_framework/dotnet.js'
 
 const { getAssemblyExports, getConfig, runMain } = await dotnet
     .withDiagnosticTracing(false)
