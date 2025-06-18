@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ludwigs_quest_wasm.dll",
   "resources": {
-    "hash": "sha256-SPIXnAE0lFwopRPLjye1Y1IybiggMfDqtFgbBCCdTC8=",
+    "hash": "sha256-vZiTRhpjGD+/7TYfHkjU9mAYdJqaBNosbFhH8+2sQFU=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-55MPMNSM0LKOqqIVvBEJryYNQ65C9J3U48Exy0B2/Zo="
     },
@@ -15,7 +15,9 @@
       "dotnet.native.js.symbols": "sha256-D4KQwbtsmruxKTZGLUz4os4kg87mkzu/5a8bVmc7hBo="
     },
     "coreAssembly": {
+      "ImGui.NET.wasm": "sha256-WJVkT7Irk00vshjcoawW65TD2i9dNaguBVB3mAXgGoY=",
       "Raylib-cs.wasm": "sha256-fK1SQ2HThnW1O3Cy9NbYf0tGj7UylpreamdB8MP70bw=",
+      "rlImGui.wasm": "sha256-iv/Uy5S6KPoIKvI3K7h3Ve8jI7gzReof5nezdaJ9PU4=",
       "Microsoft.CSharp.wasm": "sha256-Sbvtu389W9lZ0DX5ydqKaJv6B/6M8iSKw1/gTZkXey4=",
       "Microsoft.VisualBasic.Core.wasm": "sha256-x8TLQxG5v1LR/Hwp8apQyUNYXIBYbnA0uhPECMRysgY=",
       "Microsoft.VisualBasic.wasm": "sha256-GMqGoFsdex1ccT9cKjRB+jmcNtymylrlWXzG6fE7jro=",
@@ -185,15 +187,29 @@
       "mscorlib.wasm": "sha256-FzZwzxUYYyg3qxc7Km8r50UKAmRWrIeckSFG1NTHKNU=",
       "netstandard.wasm": "sha256-yAXc0deBIRkWTVXqADZfhgZtrxGgJCIbZYVtA0NjvdM=",
       "System.Private.CoreLib.wasm": "sha256-9EvnmdM9VqB+KcdsPAgDZeLBYWsBsb0orMhjExU3mEI=",
-      "ludwigs_quest_wasm.wasm": "sha256-i2I/JFE5bFkzBP1mfjVklgRMzI8N9wTIPIZ2mTZ/Ups="
+      "ludwigs_quest_wasm.wasm": "sha256-joOSMYUXCedFlSHA9G7FKGkfqJ3lR3wNaYZTlzvQh+4="
     },
     "assembly": {},
     "corePdb": {
-      "ludwigs_quest_wasm.pdb": "sha256-VRILVLAJDZHXCF/KlFvGpLXXUGudTc1X1BbdlDK5XRw="
+      "ludwigs_quest_wasm.pdb": "sha256-kK8BJbEpjRllgwOm1ei+EWcYNil3hscfpFYrtSPtCyk="
     },
     "coreVfs": {
       "runtimeconfig.bin": {
-        "supportFiles/0_runtimeconfig.bin": "sha256-sXqijo9OgIAVNGwfJ98o9JHF3imQjhjtiElx5TPlT4A="
+        "supportFiles/4_runtimeconfig.bin": "sha256-sXqijo9OgIAVNGwfJ98o9JHF3imQjhjtiElx5TPlT4A="
+      }
+    },
+    "vfs": {
+      "res/.DS_Store": {
+        "supportFiles/0_.DS_Store": "sha256-RQb+l8gH55jTT/urByUZ/XX+wgPhoaLKvIr7p2XjwKA="
+      },
+      "res/audio/LQ_Motif/Backup/LQ_Motif (overwritten at 11h58).flp": {
+        "supportFiles/1_LQ_Motif (overwritten at 11h58).flp": "sha256-vpJ5SmogJn80maHKIOZc4H1U5wSVYNbt+CHUgcmiv5Q="
+      },
+      "res/audio/LQ_Motif/LQ_Motif.flp": {
+        "supportFiles/2_LQ_Motif.flp": "sha256-P30+nil/VzkLEr309An/0ISdS1qSNgC/oG0pyqXqMo4="
+      },
+      "res/img/player.aseprite": {
+        "supportFiles/3_player.aseprite": "sha256-AsjfkQdlMkh0KoX4SuBbmjtMtS4mfwf1HclbqeVt8uU="
       }
     }
   },
