@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ludwigs_quest_wasm.dll",
   "resources": {
-    "hash": "sha256-gScTnPAGDKsAiZ9NIBfqj8A+KQLuMxbVYNHlgw4+iGw=",
+    "hash": "sha256-YwZH+vGtdM0PqMSTjKfjxmAjg3Z1PnuGj4Dz9yXJOAE=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-CGV9WVAu02LM2tXnx5Asq2aa6c14q8viLbUwH17iH7M="
     },
@@ -187,11 +187,11 @@
       "mscorlib.wasm": "sha256-FzZwzxUYYyg3qxc7Km8r50UKAmRWrIeckSFG1NTHKNU=",
       "netstandard.wasm": "sha256-yAXc0deBIRkWTVXqADZfhgZtrxGgJCIbZYVtA0NjvdM=",
       "System.Private.CoreLib.wasm": "sha256-9EvnmdM9VqB+KcdsPAgDZeLBYWsBsb0orMhjExU3mEI=",
-      "ludwigs_quest_wasm.wasm": "sha256-dW7rL6xpIPr15Eqz6JOPq3B7DqMEoDmwTOyExrg1gcA="
+      "ludwigs_quest_wasm.wasm": "sha256-FJpgMylpJws7QrnMNGiOxlSwa4wk/Lh+E43xRcQY8Jg="
     },
     "assembly": {},
     "corePdb": {
-      "ludwigs_quest_wasm.pdb": "sha256-1OezkY2gvwpV59SBTpBE6n694qQ5ZDUCJsvAELzlxc8="
+      "ludwigs_quest_wasm.pdb": "sha256-dWcUuHW83197D52ELuxukMOyuOOAnQElUwxmsfNZcNA="
     },
     "coreVfs": {
       "runtimeconfig.bin": {
