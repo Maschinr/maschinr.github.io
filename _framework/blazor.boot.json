@@ -1,18 +1,18 @@
 {
   "mainAssemblyName": "ludwigs_quest_wasm.dll",
   "resources": {
-    "hash": "sha256-R1ovHX1sWab+YhU+RqW/fMVkqAPtnRjweHlZvibhGg4=",
+    "hash": "sha256-gScTnPAGDKsAiZ9NIBfqj8A+KQLuMxbVYNHlgw4+iGw=",
     "jsModuleNative": {
-      "dotnet.native.js": "sha256-uqrFz7o67JHH8nqMFx3nu0rTrUQ7RQvbwnoiOkULmHg="
+      "dotnet.native.js": "sha256-CGV9WVAu02LM2tXnx5Asq2aa6c14q8viLbUwH17iH7M="
     },
     "jsModuleRuntime": {
       "dotnet.runtime.js": "sha256-gbZjXNFbH7V8lcix+H0TUDJHLeFUA3n3IMu7fLh4D80="
     },
     "wasmNative": {
-      "dotnet.native.wasm": "sha256-M9Mcs72FItG0ipCzGaYI+LUU4GjJYovKyWDJN6wh6Xc="
+      "dotnet.native.wasm": "sha256-KDXPFIw2GkGuWvpMZFGKQRsoZvz6OELuvcn5sEJFD4I="
     },
     "wasmSymbols": {
-      "dotnet.native.js.symbols": "sha256-7nt+o6k92sJ3PgWlguJNsQIn2OKAtTTfPJkDpIu1toM="
+      "dotnet.native.js.symbols": "sha256-iPbrPp7SFzyMRMVVh6j5uoTfrcW4a/gqvLbkyrae254="
     },
     "coreAssembly": {
       "ImGui.NET.wasm": "sha256-WJVkT7Irk00vshjcoawW65TD2i9dNaguBVB3mAXgGoY=",
