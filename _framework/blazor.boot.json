@@ -1,7 +1,7 @@
 {
   "mainAssemblyName": "ludwigs_quest_wasm.dll",
   "resources": {
-    "hash": "sha256-YwZH+vGtdM0PqMSTjKfjxmAjg3Z1PnuGj4Dz9yXJOAE=",
+    "hash": "sha256-KYgY7gLdipTTZ5tnk65mMblU4asSN7SpK6FY+9k9Zl0=",
     "jsModuleNative": {
       "dotnet.native.js": "sha256-CGV9WVAu02LM2tXnx5Asq2aa6c14q8viLbUwH17iH7M="
     },
@@ -15,6 +15,7 @@
       "dotnet.native.js.symbols": "sha256-iPbrPp7SFzyMRMVVh6j5uoTfrcW4a/gqvLbkyrae254="
     },
     "coreAssembly": {
+      "Aether.Physics2D.wasm": "sha256-Y/SGhnxc5drY3RUcNuCND5lWmYWOJ4Q1eCUYlJy50qI=",
       "ImGui.NET.wasm": "sha256-WJVkT7Irk00vshjcoawW65TD2i9dNaguBVB3mAXgGoY=",
       "Raylib-cs.wasm": "sha256-fK1SQ2HThnW1O3Cy9NbYf0tGj7UylpreamdB8MP70bw=",
       "rlImGui.wasm": "sha256-iv/Uy5S6KPoIKvI3K7h3Ve8jI7gzReof5nezdaJ9PU4=",
@@ -187,11 +188,11 @@
       "mscorlib.wasm": "sha256-FzZwzxUYYyg3qxc7Km8r50UKAmRWrIeckSFG1NTHKNU=",
       "netstandard.wasm": "sha256-yAXc0deBIRkWTVXqADZfhgZtrxGgJCIbZYVtA0NjvdM=",
       "System.Private.CoreLib.wasm": "sha256-9EvnmdM9VqB+KcdsPAgDZeLBYWsBsb0orMhjExU3mEI=",
-      "ludwigs_quest_wasm.wasm": "sha256-FJpgMylpJws7QrnMNGiOxlSwa4wk/Lh+E43xRcQY8Jg="
+      "ludwigs_quest_wasm.wasm": "sha256-pcoZf93Rx02ATXpmJfju2dvsgVIpxWjjUc7d7j8Tehc="
     },
     "assembly": {},
     "corePdb": {
-      "ludwigs_quest_wasm.pdb": "sha256-dWcUuHW83197D52ELuxukMOyuOOAnQElUwxmsfNZcNA="
+      "ludwigs_quest_wasm.pdb": "sha256-lBjemTgmf2h/laysMzHgiariY71u/r80mQujN7PHUGE="
     },
     "coreVfs": {
       "runtimeconfig.bin": {
