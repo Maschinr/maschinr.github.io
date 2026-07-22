@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#ff5b47"/>
+      <stop offset="1" stop-color="#e01f10"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Air cylinder -->
+  <g fill="#ffffff">
+    <rect x="196" y="150" width="120" height="212" rx="60"/>
+    <rect x="236" y="120" width="40" height="52" rx="12"/>
+  </g>
+  <!-- Scan line -->
+  <rect x="150" y="250" width="212" height="14" rx="7" fill="#111" opacity="0.9"/>
+  <!-- Barcode bars on cylinder -->
+  <g fill="#e01f10">
+    <rect x="216" y="196" width="8" height="40"/>
+    <rect x="230" y="196" width="5" height="40"/>
+    <rect x="242" y="196" width="10" height="40"/>
+    <rect x="258" y="196" width="5" height="40"/>
+    <rect x="269" y="196" width="8" height="40"/>
+    <rect x="284" y="196" width="6" height="40"/>
+  </g>
+  <!-- Check badge -->
+  <circle cx="330" cy="330" r="52" fill="#34c759" stroke="#ffffff" stroke-width="10"/>
+  <path d="M308 330l16 16 30-32" fill="none" stroke="#ffffff" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
