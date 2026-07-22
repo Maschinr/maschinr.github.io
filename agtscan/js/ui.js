@@ -106,21 +106,31 @@ export function openModal(build, { onClose } = {}) {
 /** Confirmation dialog. Resolves true/false. */
 export function confirmDialog({ title, message, confirmLabel = 'Bestätigen', danger = false }) {
   return new Promise((resolve) => {
+    // A Promise settles only once. Closing the modal triggers onClose, which
+    // would otherwise resolve(false) before the button's own resolve runs, so
+    // funnel every exit through a single guarded settle.
+    let settled = false;
+    const settle = (result, close) => {
+      if (settled) return;
+      settled = true;
+      close && close();
+      resolve(result);
+    };
     openModal((close) => {
       const modal = el('div', { class: 'modal' });
       modal.append(
         el('div', { class: 'modal__head' }, el('div', { class: 'modal__title' }, title)),
         el('div', { class: 'modal__body' }, el('p', { style: 'color:var(--text-2);line-height:1.5' }, message)),
         el('div', { class: 'modal__foot' },
-          el('button', { class: 'btn btn--ghost', onclick: () => { close(); resolve(false); } }, 'Abbrechen'),
+          el('button', { class: 'btn btn--ghost', onclick: () => settle(false, close) }, 'Abbrechen'),
           el('button', {
             class: 'btn ' + (danger ? 'btn--primary' : 'btn--primary'),
             style: danger ? 'background:var(--red)' : '',
-            onclick: () => { close(); resolve(true); },
+            onclick: () => settle(true, close),
           }, confirmLabel),
         ),
       );
       return modal;
-    }, { onClose: () => resolve(false) });
+    }, { onClose: () => settle(false) });
   });
 }
