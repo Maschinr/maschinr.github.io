@@ -75,10 +75,6 @@ export function deleteDevice(id) {
   reindex(data.devices);
   persist();
 }
-export function reorderDevices(orderedIds) {
-  applyOrder(data.devices, orderedIds);
-  persist();
-}
 
 /* Part-number scan sets number + records the scan date. */
 export function setDevicePart(id, part, number) {
@@ -149,17 +145,6 @@ export function deletePerson(id) {
   reindex(data.persons);
   persist();
 }
-export function reorderPersons(orderedIds) {
-  // Reorder only among the supplied ids, reusing their existing order slots so
-  // the untouched section keeps its positions (mirrors the iOS section move).
-  const subset = data.persons.filter((p) => orderedIds.includes(p.id));
-  const slots = subset.map((p) => p.order).sort((a, b) => a - b);
-  orderedIds.forEach((id, i) => {
-    const p = getPerson(id);
-    if (p) p.order = slots[i];
-  });
-  persist();
-}
 
 /* ---------------- Settings ---------------- */
 
@@ -201,10 +186,4 @@ export function exportData() {
 
 function reindex(arr) {
   arr.sort((a, b) => a.order - b.order).forEach((item, i) => { item.order = i; });
-}
-function applyOrder(arr, orderedIds) {
-  orderedIds.forEach((id, i) => {
-    const item = arr.find((x) => x.id === id);
-    if (item) item.order = i;
-  });
 }

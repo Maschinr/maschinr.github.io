@@ -141,10 +141,6 @@ function buildView(route) {
 function chevron() {
   return el('span', { class: 'row__chevron' }, iconEl(icons.chevronRight));
 }
-function dragHandle() {
-  return el('span', { class: 'drag-handle', dataset: { handle: '1' }, 'aria-hidden': 'true' }, iconEl(icons.drag));
-}
-
 function emptyState(iconSvg, text) {
   return el('div', { class: 'empty' },
     el('div', { class: 'empty__icon' }, iconEl(iconSvg)),
@@ -176,13 +172,11 @@ function deviceListView() {
     devices.forEach((d) => {
       const sub = deviceSubtitle(d);
       list.append(el('a', { class: 'list__row', href: `#/devices/${d.id}`, dataset: { id: d.id } },
-        dragHandle(),
         el('div', { class: 'row__main' },
           el('div', { class: 'row__title' }, d.deviceName),
           sub && el('div', { class: 'row__sub' }, sub)),
         chevron()));
     });
-    enableReorder(list, (ids) => { store.reorderDevices(ids); });
     node = el('div', { class: 'card' }, list);
   }
   return { title: 'Geräte', actions: [addBtn], node };
@@ -392,12 +386,10 @@ function personListView() {
     const listEl = el('div', { class: 'list' });
     list.forEach((p) => {
       listEl.append(el('a', { class: 'list__row', href: `#/persons/${p.id}`, dataset: { id: p.id } },
-        dragHandle(),
         el('span', { class: `dot ${isFit(p) ? 'green' : 'red'}` }),
         el('div', { class: 'row__main' }, el('div', { class: 'row__title' }, p.firstName + ' ' + p.lastName)),
         chevron()));
     });
-    enableReorder(listEl, (orderedIds) => { store.reorderPersons(orderedIds); });
     node.append(el('div', { class: 'card' }, listEl));
   };
 
@@ -817,63 +809,6 @@ function notFoundView(text, back) {
     node: el('div', {}, emptyState(icons.inbox, text),
       el('div', { style: 'text-align:center' }, el('a', { class: 'btn btn--ghost', href: back }, 'Zurück'))),
   };
-}
-
-/* ============================================================
-   Drag-to-reorder (pointer based, works on touch + mouse)
-   ============================================================ */
-
-function enableReorder(listEl, onReorder) {
-  let dragging = null, rows = [], startY = 0, offset = 0;
-
-  const rowFromHandle = (target) => {
-    const handle = target.closest('[data-handle]');
-    if (!handle || !listEl.contains(handle)) return null;
-    return handle.closest('.list__row');
-  };
-
-  listEl.addEventListener('pointerdown', (e) => {
-    const row = rowFromHandle(e.target);
-    if (!row) return;
-    e.preventDefault();
-    dragging = row;
-    rows = [...listEl.querySelectorAll('.list__row')];
-    startY = e.clientY;
-    offset = 0;
-    row.classList.add('dragging');
-    row.setPointerCapture?.(e.pointerId);
-
-    const onMove = (ev) => {
-      offset = ev.clientY - startY;
-      const rect = dragging.getBoundingClientRect();
-      const mid = rect.top + rect.height / 2;
-      for (const other of rows) {
-        if (other === dragging) continue;
-        const r = other.getBoundingClientRect();
-        if (mid > r.top && mid < r.bottom) {
-          const before = mid < r.top + r.height / 2;
-          if (before) listEl.insertBefore(dragging, other);
-          else listEl.insertBefore(dragging, other.nextSibling);
-          break;
-        }
-      }
-    };
-    const onUp = () => {
-      document.removeEventListener('pointermove', onMove);
-      document.removeEventListener('pointerup', onUp);
-      dragging.classList.remove('dragging');
-      const ids = [...listEl.querySelectorAll('.list__row')].map((r) => r.dataset.id);
-      dragging = null;
-      onReorder(ids);
-    };
-    document.addEventListener('pointermove', onMove);
-    document.addEventListener('pointerup', onUp);
-  });
-
-  // Prevent link navigation when the drag started on the handle.
-  listEl.addEventListener('click', (e) => {
-    if (e.target.closest('[data-handle]')) e.preventDefault();
-  });
 }
 
 /* ============================================================
