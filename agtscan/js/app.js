@@ -191,7 +191,7 @@ function deviceSubtitle(d) {
 function openAddDevice() {
   formModal({
     title: 'Gerät hinzufügen',
-    fields: [{ key: 'deviceName', label: 'Name', placeholder: 'erforderlich', required: true }],
+    fields: [{ key: 'deviceName', label: 'Name', placeholder: 'Erforderlich', required: true }],
     submitLabel: 'Hinzufügen',
     onSubmit: (v) => {
       const d = store.addDevice(v.deviceName.trim());
@@ -234,7 +234,7 @@ function deviceDetailView(id) {
       scanIcon,
       el('div', { class: 'field__body' },
         el('div', {}, p.label),
-        el('div', { class: 'field__hint', style: 'color:var(--text-3)' }, p.date ? formatDate(p.date) : 'nicht erfasst')),
+        el('div', { class: 'field__hint', style: 'color:var(--text-3)' }, p.date ? formatDate(p.date) : 'Nicht erfasst')),
       el('div', { class: 'field__value' + (p.number ? '' : ' muted') }, p.number || '—')));
   });
   node.append(partCard);
@@ -330,7 +330,7 @@ function addInspectionModal(device) {
     const rangeVal = el('div', { class: 'range-val' }, '300 bar');
     range.addEventListener('input', () => { pressureVal.current = +range.value; rangeVal.textContent = range.value + ' bar'; });
 
-    const notes = el('textarea', { class: 'textarea', placeholder: 'optional' });
+    const notes = el('textarea', { class: 'textarea', placeholder: 'Optional' });
 
     modal.append(
       el('div', { class: 'modal__head' },
@@ -403,8 +403,8 @@ function openAddPerson() {
   formModal({
     title: 'Person hinzufügen',
     fields: [
-      { key: 'firstName', label: 'Vorname', placeholder: 'erforderlich', required: true },
-      { key: 'lastName', label: 'Nachname', placeholder: 'erforderlich', required: true },
+      { key: 'firstName', label: 'Vorname', placeholder: 'Erforderlich', required: true },
+      { key: 'lastName', label: 'Nachname', placeholder: 'Erforderlich', required: true },
     ],
     submitLabel: 'Hinzufügen',
     onSubmit: (v) => {
@@ -420,7 +420,7 @@ function openAddPerson() {
    ============================================================ */
 
 const REQ_STATUS_COLOR = { valid: 'green', expired: 'red', redundant: 'gray' };
-const REQ_STATUS_LABEL = { valid: 'gültig', expired: 'abgelaufen', redundant: 'nicht erforderlich' };
+const REQ_STATUS_LABEL = { valid: 'Gültig', expired: 'Abgelaufen', redundant: 'Nicht Erforderlich' };
 
 function personDetailView(id) {
   const person = store.getPerson(id);
@@ -450,7 +450,7 @@ function personDetailView(id) {
       el('span', { class: `dot ${REQ_STATUS_COLOR[status]}`, title: REQ_STATUS_LABEL[status] }),
       el('div', { class: 'field__body' },
         el('div', {}, req.title),
-        !value && el('div', { class: 'field__hint' }, 'nicht erfasst')),
+        !value && el('div', { class: 'field__hint' }, 'Nicht erfasst')),
       el('div', { class: 'field__value' + (value ? '' : ' muted') }, value ? formatDateShort(value) : '—'),
       el('span', { class: 'row__chevron', style: 'margin-left:8px' }, iconEl(icons.chevronRight)),
     ));
@@ -624,7 +624,7 @@ function settingsView() {
       store.updateSettings({ deviceNotifications: val });
       if (val) await requestNotificationPermission();
     }),
-    toggleRow('Tauglichkeit Personen', settings.personNotifications, async (val) => {
+    toggleRow('Tauglichkeiten', settings.personNotifications, async (val) => {
       store.updateSettings({ personNotifications: val });
       if (val) await requestNotificationPermission();
     }),
@@ -642,7 +642,6 @@ function settingsView() {
   };
   dataCard.append(
     neutralAction(icons.download, 'FeuerOn Import', openImport),
-    neutralAction(icons.download, 'Daten exportieren (JSON)', exportBackup),
     el('button', { class: 'list__action', style: 'color:var(--red)', onclick: async () => {
       if (await confirmDialog({ title: 'Alle Daten löschen?', message: 'Alle Geräte und Personen werden unwiderruflich gelöscht.', confirmLabel: 'Löschen', danger: true })) {
         store.deleteAllData();
@@ -699,15 +698,6 @@ function openImport() {
   document.body.append(input);
   input.click();
   setTimeout(() => input.remove(), 1000);
-}
-
-function exportBackup() {
-  const blob = new Blob([store.exportData()], { type: 'application/json' });
-  const url = URL.createObjectURL(blob);
-  const a = el('a', { href: url, download: `agtscan-backup-${toDateInput(new Date())}.json` });
-  document.body.append(a); a.click(); a.remove();
-  URL.revokeObjectURL(url);
-  toast('Backup exportiert');
 }
 
 /* ============================================================
