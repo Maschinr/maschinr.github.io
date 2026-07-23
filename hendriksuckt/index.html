@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Daniel vs. Hendrik — Der ehrliche Produktvergleich</title>
+  <meta name="description" content="Ein datengetriebener Vergleich zweier grundverschiedener Modelle. Spoiler: eines ist premium, eines ist aus Achim." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0b0d12" />
+
+  <style>
+    :root{
+      --bg:#0b0d12;
+      --bg-soft:#11141c;
+      --card:#151925;
+      --card-2:#1b2130;
+      --line:#242b3b;
+      --txt:#eef1f7;
+      --muted:#96a0b5;
+      --dim:#5f6b82;
+      /* Daniel = premium gold/emerald, Hendrik = billig grau */
+      --gold:#e7b53c;
+      --emerald:#37d69a;
+      --emerald-soft:rgba(55,214,154,.12);
+      --hendrik:#8892a6;
+      --hendrik-soft:rgba(136,146,166,.10);
+      --danger:#ff5d6c;
+      --radius:20px;
+      --maxw:1120px;
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--txt);
+      background:
+        radial-gradient(1200px 600px at 15% -10%, rgba(231,181,60,.10), transparent 60%),
+        radial-gradient(1000px 700px at 100% 0%, rgba(55,214,154,.08), transparent 55%),
+        var(--bg);
+      line-height:1.55;
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    a{color:inherit}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+    /* ---------- Nav ---------- */
+    header.nav{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:saturate(140%) blur(12px);
+      background:rgba(11,13,18,.72);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:62px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px}
+    .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--gold),var(--emerald))}
+    .nav-cta{
+      font-size:13px;font-weight:600;color:var(--bg);
+      background:linear-gradient(135deg,var(--gold),var(--emerald));
+      padding:9px 16px;border-radius:999px;text-decoration:none;white-space:nowrap;
+    }
+    .nav-links{display:flex;gap:26px;font-size:14px;color:var(--muted)}
+    .nav-links a{text-decoration:none}
+    .nav-links a:hover{color:var(--txt)}
+    @media(max-width:720px){.nav-links{display:none}}
+
+    /* ---------- Hero ---------- */
+    .hero{padding:70px 0 40px;text-align:center}
+    .eyebrow{
+      display:inline-block;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;
+      color:var(--muted);border:1px solid var(--line);padding:6px 14px;border-radius:999px;
+      background:var(--bg-soft);margin-bottom:22px;
+    }
+    .hero h1{
+      font-size:clamp(34px,6vw,62px);line-height:1.05;margin:0 0 18px;font-weight:800;letter-spacing:-.02em;
+    }
+    .hero h1 .g{background:linear-gradient(120deg,var(--gold),var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .hero h1 .h{color:var(--dim)}
+    .hero p.sub{max-width:640px;margin:0 auto;color:var(--muted);font-size:clamp(16px,2.4vw,19px)}
+    .hero .disclaimer{margin-top:14px;font-size:12.5px;color:var(--dim)}
+
+    /* ---------- Product duel header ---------- */
+    .duel{display:grid;grid-template-columns:1fr 76px 1fr;gap:0;margin:48px 0 10px;align-items:stretch}
+    @media(max-width:760px){.duel{grid-template-columns:1fr;gap:16px}}
+    .pcard{
+      border:1px solid var(--line);border-radius:var(--radius);padding:28px 24px;position:relative;overflow:hidden;
+      background:linear-gradient(180deg,var(--card),var(--bg-soft));
+    }
+    .pcard.daniel{border-color:rgba(231,181,60,.35);box-shadow:0 0 0 1px rgba(231,181,60,.06),0 30px 60px -30px rgba(231,181,60,.25)}
+    .pcard.hendrik{border-color:var(--line);opacity:.96}
+    .pcard .tier{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:6px}
+    .daniel .tier{color:var(--gold)}
+    .hendrik .tier{color:var(--hendrik)}
+    .pcard h2{margin:0 0 4px;font-size:30px;font-weight:800;letter-spacing:-.01em}
+    .pcard .role{color:var(--muted);font-size:14.5px;margin-bottom:18px}
+    .price{display:flex;align-items:baseline;gap:8px;margin-bottom:16px}
+    .price .amt{font-size:34px;font-weight:800}
+    .daniel .price .amt{color:var(--emerald)}
+    .hendrik .price .amt{color:var(--hendrik)}
+    .price .per{color:var(--dim);font-size:13px}
+    .price .strike{color:var(--dim);text-decoration:line-through;font-size:16px}
+    .feat{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+    .feat li{display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:var(--muted)}
+    .feat li svg{flex:none;margin-top:2px}
+    .badge-top{
+      position:absolute;top:16px;right:16px;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+      padding:5px 11px;border-radius:999px;
+    }
+    .daniel .badge-top{color:var(--bg);background:linear-gradient(135deg,var(--gold),var(--emerald))}
+    .hendrik .badge-top{color:var(--dim);background:var(--hendrik-soft);border:1px solid var(--line)}
+    .vs{
+      display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--dim);font-size:18px;
+    }
+    .vs span{
+      width:54px;height:54px;border-radius:50%;display:grid;place-items:center;
+      border:1px solid var(--line);background:var(--card);box-shadow:0 10px 30px -10px rgba(0,0,0,.6)
+    }
+    @media(max-width:760px){.vs{height:auto;padding:2px 0}}
+
+    /* ---------- Section ---------- */
+    section.block{padding:56px 0}
+    .kicker{font-size:13px;letter-spacing:.14em;text-transform:uppercase;color:var(--emerald);font-weight:700;margin-bottom:12px}
+    .kicker.alt{color:var(--gold)}
+    h3.title{font-size:clamp(26px,4vw,38px);margin:0 0 14px;font-weight:800;letter-spacing:-.01em}
+    .lead{color:var(--muted);max-width:720px;font-size:17px}
+
+    /* ---------- Comparison feature cards ---------- */
+    .cmp{display:flex;flex-direction:column;gap:22px;margin-top:34px}
+    .cmp-row{
+      display:grid;grid-template-columns:64px 1fr;gap:20px;
+      border:1px solid var(--line);border-radius:var(--radius);
+      background:linear-gradient(180deg,var(--card),var(--bg-soft));
+      padding:26px 24px;
+    }
+    .cmp-ico{
+      width:64px;height:64px;border-radius:16px;display:grid;place-items:center;
+      background:var(--emerald-soft);border:1px solid rgba(55,214,154,.25);
+    }
+    .cmp-row.metric-h .cmp-ico{background:var(--hendrik-soft);border-color:var(--line)}
+    .cmp-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:4px}
+    .cmp-head h4{margin:0;font-size:20px;font-weight:750}
+    .tag{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+    .tag.win{color:var(--emerald);background:var(--emerald-soft);border:1px solid rgba(55,214,154,.3)}
+    .tag.fail{color:var(--danger);background:rgba(255,93,108,.1);border:1px solid rgba(255,93,108,.3)}
+    .cmp-body{color:var(--muted);font-size:15px}
+    .cmp-body p{margin:8px 0 0}
+    .split{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:16px}
+    @media(max-width:620px){.split{grid-template-columns:1fr}.cmp-row{grid-template-columns:1fr}.cmp-ico{width:56px;height:56px}}
+    .mini{border-radius:14px;padding:14px 16px;border:1px solid var(--line)}
+    .mini.d{background:var(--emerald-soft);border-color:rgba(55,214,154,.25)}
+    .mini.h{background:var(--hendrik-soft)}
+    .mini .who{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+    .mini.d .who{color:var(--emerald)}
+    .mini.h .who{color:var(--hendrik)}
+    .mini .val{font-size:14px;color:var(--txt)}
+
+    /* meter */
+    .meter{margin-top:14px}
+    .meter .track{height:12px;border-radius:999px;background:var(--card-2);overflow:hidden;border:1px solid var(--line)}
+    .meter .fill{height:100%;border-radius:999px}
+    .meter .fill.d{background:linear-gradient(90deg,var(--emerald),var(--gold))}
+    .meter .fill.h{background:var(--hendrik)}
+    .meter .row{display:flex;justify-content:space-between;font-size:12.5px;color:var(--dim);margin-top:7px}
+
+    /* ---------- Spec table ---------- */
+    .spec{margin-top:20px;border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}
+    .spec-row{display:grid;grid-template-columns:1.1fr 1fr 1fr;border-top:1px solid var(--line)}
+    .spec-row:first-child{border-top:0}
+    .spec-row > div{padding:16px 18px;font-size:14.5px}
+    .spec-row.head > div{background:var(--card-2);font-weight:700;font-size:13px;letter-spacing:.03em}
+    .spec-row .lbl{color:var(--muted)}
+    .spec-row .d{color:var(--txt);border-left:1px solid var(--line);background:rgba(55,214,154,.05)}
+    .spec-row .h{color:var(--muted);border-left:1px solid var(--line)}
+    .spec-row .d b{color:var(--emerald)}
+    .spec-row .h b{color:var(--hendrik)}
+    @media(max-width:620px){.spec-row{grid-template-columns:1fr}.spec-row .d,.spec-row .h{border-left:0;border-top:1px solid var(--line)}}
+
+    /* ---------- Final verdict ---------- */
+    .verdict{
+      margin:60px 0 20px;border:1px solid rgba(231,181,60,.3);border-radius:var(--radius);
+      background:linear-gradient(180deg,var(--card),var(--bg-soft));padding:40px 30px;text-align:center;
+      box-shadow:0 30px 70px -40px rgba(231,181,60,.35);
+    }
+    .verdict .score{font-size:15px;color:var(--muted);margin-bottom:8px}
+    .verdict h3{font-size:clamp(26px,4vw,40px);margin:0 0 12px;font-weight:800}
+    .verdict h3 .g{background:linear-gradient(120deg,var(--gold),var(--emerald));-webkit-background-clip:text;background-clip:text;color:transparent}
+    .verdict p{color:var(--muted);max-width:640px;margin:0 auto 22px;font-size:16px}
+    .stars{display:flex;gap:18px;justify-content:center;flex-wrap:wrap;margin-bottom:8px}
+    .rate{display:flex;flex-direction:column;align-items:center;gap:6px}
+    .rate .name{font-size:13px;color:var(--dim);font-weight:600}
+    .rate .s{font-size:20px;letter-spacing:2px}
+    .rate .s.d{color:var(--gold)}
+    .rate .s.h{color:var(--dim)}
+
+    footer{border-top:1px solid var(--line);padding:34px 0;color:var(--dim);font-size:13px;text-align:center}
+    footer .small{max-width:640px;margin:8px auto 0;font-size:12px;color:#454e60}
+  </style>
+</head>
+<body>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand"><span class="dot"></span> Der ehrliche Vergleich</div>
+      <nav class="nav-links">
+        <a href="#groesse">Größe</a>
+        <a href="#lol">League of Legends</a>
+        <a href="#wow">WoW Classic</a>
+        <a href="#wohnort">Wohnort</a>
+      </nav>
+      <a class="nav-cta" href="#fazit">Zum Testsieger</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+      <span class="eyebrow">Unabhängiger Produktvergleich · Edition 2026</span>
+      <h1>
+        <span class="g">Daniel</span> <span class="h">vs.</span> <span class="h">Hendrik</span>
+      </h1>
+      <p class="sub">
+        Zwei Modelle, eine Kategorie — und ein erstaunlich klarer Sieger. Wir haben beide
+        auf Herz, Nieren, Bodenfreiheit und Ranglistentauglichkeit geprüft. Die Ergebnisse
+        sprechen für sich. Und leider gegen Achim.
+      </p>
+      <p class="disclaimer">Alle Angaben getestet unter Laborbedingungen. Ergebnisse können bei Hendrik nach unten abweichen.</p>
+    </section>
+
+    <!-- PRODUCT DUEL -->
+    <section class="duel">
+      <div class="pcard daniel">
+        <span class="badge-top">Testsieger</span>
+        <div class="tier">Premium-Modell</div>
+        <h2>Daniel</h2>
+        <div class="role">Der Support, der das Team trägt · Lemwerder Edition</div>
+        <div class="price">
+          <span class="amt">Flagship</span>
+          <span class="per">/ voll ausgestattet</span>
+        </div>
+        <ul class="feat">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#37d69a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Ausgewachsene Körpergröße, serienmäßig
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#37d69a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Elite-Support — trägt das Ranked-Ergebnis
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#37d69a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Lernfähig &amp; anpassungsbereit (siehe: TBC-ready)
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M20 6 9 17l-5-5" stroke="#37d69a" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Premium-Standort Lemwerder inklusive
+          </li>
+        </ul>
+      </div>
+
+      <div class="vs"><span>VS</span></div>
+
+      <div class="pcard hendrik">
+        <span class="badge-top">Restposten</span>
+        <div class="tier">Budget-Variante</div>
+        <h2>Hendrik</h2>
+        <div class="role">ADC ohne Reichweite · Achim Edition (auslaufend)</div>
+        <div class="price">
+          <span class="amt">Kompakt</span>
+          <span class="per">/ Details siehe unten</span>
+        </div>
+        <ul class="feat">
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="#8892a6" stroke-width="2.2" stroke-linecap="round"/></svg>
+            Reduzierte Bauhöhe (nicht nachrüstbar)
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="#8892a6" stroke-width="2.2" stroke-linecap="round"/></svg>
+            ADC-Rolle, aber ohne die passende Leistung
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="#8892a6" stroke-width="2.2" stroke-linecap="round"/></svg>
+            Firmware auf WoW Classic eingefroren
+          </li>
+          <li>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M18 6 6 18M6 6l12 12" stroke="#8892a6" stroke-width="2.2" stroke-linecap="round"/></svg>
+            Standort Achim — leider fest verlötet
+          </li>
+        </ul>
+      </div>
+    </section>
+    <p class="hero disclaimer" style="text-align:center;padding:0;margin:14px 0 0">Beide Modelle im direkten A/B-Test. Fairerweise haben wir Hendrik zwei Versuche gegeben.</p>
+
+    <!-- KÖRPERGRÖSSE -->
+    <section class="block" id="groesse">
+      <div class="kicker alt">Kapitel 1 — Bauform &amp; Abmessungen</div>
+      <h3 class="title">Körpergröße: Ein Unterschied, den man sieht</h3>
+      <p class="lead">
+        Wir wollen niemanden kleinreden. Das erledigt Hendriks Statur bereits von ganz allein.
+        Wo Daniel serienmäßig auf voller Höhe ausgeliefert wird, kommt Hendrik in der
+        Kompaktklasse — praktisch für enge Regale, unpraktisch für alles andere.
+      </p>
+
+      <div class="cmp">
+        <div class="cmp-row">
+          <div class="cmp-ico">
+            <!-- ruler / height pictogram -->
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3v18M12 3l-3 3M12 3l3 3M12 21l-3-3M12 21l3-3" stroke="#37d69a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <rect x="4" y="9" width="16" height="6" rx="1.5" stroke="#37d69a" stroke-width="1.6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cmp-head">
+              <h4>Standhöhe im Direktvergleich</h4>
+              <span class="tag win">Daniel überragt</span>
+            </div>
+            <div class="cmp-body">
+              <p>
+                Man kann Größe nicht kaufen, sagt man. Hendrik hat's trotzdem versucht und ist
+                zurückgeschickt worden. Objektiv gemessen bleibt festzuhalten: Bei einem
+                Highfive braucht Daniel den Arm nicht zu senken.
+              </p>
+              <div class="meter">
+                <div class="track"><div class="fill d" style="width:100%"></div></div>
+                <div class="row"><span>Daniel — volle Größe</span><span>100 %</span></div>
+              </div>
+              <div class="meter">
+                <div class="track"><div class="fill h" style="width:61%"></div></div>
+                <div class="row"><span>Hendrik — „gut Ding will Weile“</span><span>Kompaktklasse</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LEAGUE OF LEGENDS -->
+    <section class="block" id="lol">
+      <div class="kicker">Kapitel 2 — Performance im Feld</div>
+      <h3 class="title">League of Legends: Support-Klasse trifft auf Stützräder</h3>
+      <p class="lead">
+        Auf dem Rift zeigt sich die wahre Verarbeitungsqualität. Daniel spielt Support und
+        trägt — entgegen des Klischees — das Ergebnis maßgeblich. Hendrik spielt ADC,
+        also die Rolle, die eigentlich Schaden machen soll. Konjunktiv beabsichtigt.
+      </p>
+
+      <div class="cmp">
+        <div class="cmp-row">
+          <div class="cmp-ico">
+            <!-- crosshair / carry pictogram -->
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <circle cx="12" cy="12" r="8" stroke="#37d69a" stroke-width="1.8"/>
+              <path d="M12 2v4M12 18v4M2 12h4M18 12h4" stroke="#37d69a" stroke-width="1.8" stroke-linecap="round"/>
+              <circle cx="12" cy="12" r="2.2" fill="#37d69a"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cmp-head">
+              <h4>Wer trägt das Team wirklich?</h4>
+              <span class="tag win">Daniel carryt</span>
+            </div>
+            <div class="cmp-body">
+              <p>
+                Ein guter Support ist unsichtbar wichtig. Ein schlechter ADC ist sichtbar
+                daneben. Daniel wardet, engaged, peelt und hält den ADC am Leben — meistens
+                sogar Hendrik. Danke wird selten gesagt.
+              </p>
+              <div class="split">
+                <div class="mini d">
+                  <div class="who">Daniel · Support</div>
+                  <div class="val">Vision, Roams, saubere Engages. Der Grund, warum das Spiel überhaupt gewonnen wird.</div>
+                </div>
+                <div class="mini h">
+                  <div class="who">Hendrik · ADC</div>
+                  <div class="val">Positioniert sich mutig — direkt in die feindliche Fähigkeit. Farm-Effizienz: „ausbaufähig“.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="cmp-row metric-h">
+          <div class="cmp-ico">
+            <!-- skull / feed pictogram -->
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M4 11a8 8 0 1 1 16 0v3.5a2 2 0 0 1-1.2 1.83L17 17v2a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1v-2l-1.8-.67A2 2 0 0 1 4 14.5V11Z" stroke="#8892a6" stroke-width="1.6"/>
+              <circle cx="9" cy="12" r="1.6" fill="#8892a6"/>
+              <circle cx="15" cy="12" r="1.6" fill="#8892a6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cmp-head">
+              <h4>Kompetenz-Index ADC</h4>
+              <span class="tag fail">Wartung erforderlich</span>
+            </div>
+            <div class="cmp-body">
+              <p>
+                Die ADC-Rolle verlangt Mechanik, Geduld und Übersicht. Hendrik bringt davon
+                verlässlich die Absicht mit. Der KDA liest sich wie eine Telefonnummer — leider
+                von hinten.
+              </p>
+              <div class="meter">
+                <div class="track"><div class="fill d" style="width:92%"></div></div>
+                <div class="row"><span>Daniel — Impact aufs Ergebnis</span><span>S-Tier</span></div>
+              </div>
+              <div class="meter">
+                <div class="track"><div class="fill h" style="width:24%"></div></div>
+                <div class="row"><span>Hendrik — Impact aufs Ergebnis</span><span>„inting detected“</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WOW CLASSIC / TBC -->
+    <section class="block" id="wow">
+      <div class="kicker alt">Kapitel 3 — Software &amp; Update-Politik</div>
+      <h3 class="title">WoW Classic: Ein Patch von 2019, fest verbaut</h3>
+      <p class="lead">
+        Gute Produkte bekommen Updates. Hendrik hat sich entschieden, keine anzunehmen.
+        Während die Welt längst über TBC Classic — das objektiv rundere, tiefere und
+        schlicht bessere Erlebnis — verfügt, verharrt Hendrik trotzig im Vanilla-Modus.
+        Sturheit als Feature verkauft.
+      </p>
+
+      <div class="cmp">
+        <div class="cmp-row metric-h">
+          <div class="cmp-ico">
+            <!-- lock / frozen firmware pictogram -->
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <rect x="5" y="10.5" width="14" height="9.5" rx="2" stroke="#8892a6" stroke-width="1.7"/>
+              <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" stroke="#8892a6" stroke-width="1.7"/>
+              <circle cx="12" cy="15" r="1.3" fill="#8892a6"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cmp-head">
+              <h4>Update-Bereitschaft</h4>
+              <span class="tag fail">Firmware eingefroren</span>
+            </div>
+            <div class="cmp-body">
+              <p>
+                „Ich bleib bei Classic“ — gesagt mit der Überzeugung eines Mannes, der auch
+                noch das Nokia 3310 verteidigt. TBC bringt fliegende Mounts, die Scherbenwelt
+                und ein Endgame, das diesen Namen verdient. Hendrik bringt: Argumente von 2006.
+              </p>
+              <div class="split">
+                <div class="mini d">
+                  <div class="who">Daniel · TBC-ready</div>
+                  <div class="val">Offen für das bessere Add-on. Flexibel, informiert, mit fliegendem Mount unterwegs.</div>
+                </div>
+                <div class="mini h">
+                  <div class="who">Hendrik · Vanilla forever</div>
+                  <div class="val">Verweigert das Upgrade aus Prinzip. Läuft zu Fuß durch die Pestländer. Aus Prinzip.</div>
+                </div>
+              </div>
+              <div class="meter">
+                <div class="track"><div class="fill h" style="width:18%"></div></div>
+                <div class="row"><span>Hendrik — Anpassungsbereitschaft</span><span>„Never change a losing team“</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- WOHNORT -->
+    <section class="block" id="wohnort">
+      <div class="kicker">Kapitel 4 — Standortfaktor</div>
+      <h3 class="title">Wohnort: Lemwerder ab Werk, Achim nachträglich</h3>
+      <p class="lead">
+        Der Standort ist bei jedem Modell entscheidend — und hier trennt sich die Premiumklasse
+        endgültig vom Restposten. Daniel residiert in Lemwerder. Hendrik hingegen ist in Achim
+        gestrandet, und man sieht dem Modell die Kilometerpauschale an.
+      </p>
+
+      <div class="cmp">
+        <div class="cmp-row">
+          <div class="cmp-ico">
+            <!-- map pin pictogram -->
+            <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+              <path d="M12 21s7-6.2 7-11a7 7 0 1 0-14 0c0 4.8 7 11 7 11Z" stroke="#37d69a" stroke-width="1.7" stroke-linejoin="round"/>
+              <circle cx="12" cy="10" r="2.4" stroke="#37d69a" stroke-width="1.7"/>
+            </svg>
+          </div>
+          <div>
+            <div class="cmp-head">
+              <h4>Lagequalität</h4>
+              <span class="tag win">Lemwerder gewinnt</span>
+            </div>
+            <div class="cmp-body">
+              <p>
+                Lemwerder: charmant, an der Weser, mit Haltung. Achim: existiert ebenfalls.
+                Man muss Achim zugutehalten, dass es tapfer versucht, eine Stadt zu sein —
+                aber gegen Lemwerder ist das ein Auswärtsspiel ohne Fans.
+              </p>
+              <div class="split">
+                <div class="mini d">
+                  <div class="who">Daniel · Lemwerder</div>
+                  <div class="val">Weserlage, kurze Wege, hoher Wohlfühlfaktor. Adresse, die man gern nennt.</div>
+                </div>
+                <div class="mini h">
+                  <div class="who">Hendrik · Achim</div>
+                  <div class="val">Solide erreichbar über die A1 — vor allem in Fahrtrichtung „woanders hin“.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SPEC TABLE -->
+    <section class="block">
+      <div class="kicker alt">Datenblatt</div>
+      <h3 class="title">Die technischen Daten auf einen Blick</h3>
+      <div class="spec">
+        <div class="spec-row head">
+          <div class="lbl">Merkmal</div>
+          <div class="d">Daniel</div>
+          <div class="h">Hendrik</div>
+        </div>
+        <div class="spec-row">
+          <div class="lbl">Körpergröße</div>
+          <div class="d"><b>Voll ausgefahren</b></div>
+          <div class="h"><b>Kompaktklasse</b></div>
+        </div>
+        <div class="spec-row">
+          <div class="lbl">LoL-Rolle</div>
+          <div class="d">Support — <b>carryt das Team</b></div>
+          <div class="h">ADC — <b>carryt die Gegner</b></div>
+        </div>
+        <div class="spec-row">
+          <div class="lbl">Ranked-Impact</div>
+          <div class="d"><b>Maßgeblich</b></div>
+          <div class="h">Statistisch messbar (negativ)</div>
+        </div>
+        <div class="spec-row">
+          <div class="lbl">WoW-Version</div>
+          <div class="d">TBC Classic — <b>das bessere Add-on</b></div>
+          <div class="h">WoW Classic — <b>aus Prinzip</b></div>
+        </div>
+        <div class="spec-row">
+          <div class="lbl">Update-Politik</div>
+          <div class="d">Offen &amp; lernfähig</div>
+          <div class="h">Firmware eingefroren</div>
+        </div>
+        <div class="spec-row">
+          <div class="lbl">Standort</div>
+          <div class="d">Lemwerder — <b>Premiumlage</b></div>
+          <div class="h">Achim — <b>ab Werk benachteiligt</b></div>
+        </div>
+        <div class="spec-row">
+          <div class="lbl">Garantie</div>
+          <div class="d">Trägt das Team lebenslang</div>
+          <div class="h">Rücksendung nicht möglich (leider)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VERDICT -->
+    <section id="fazit">
+      <div class="verdict">
+        <div class="score">Redaktions-Gesamtwertung</div>
+        <h3>Testsieger: <span class="g">Daniel</span>, in allen Disziplinen.</h3>
+        <p>
+          Nach gründlicher Prüfung fällt das Urteil eindeutig aus. Daniel überzeugt bei Größe,
+          Ranked-Impact, Update-Bereitschaft und Standort auf ganzer Linie. Hendrik überzeugt
+          vor allem davon, dass es noch Luft nach oben gibt — buchstäblich. Eine klare
+          Kaufempfehlung, und eine ebenso klare Warnung vor Achim.
+        </p>
+        <div class="stars">
+          <div class="rate">
+            <div class="s d">★★★★★</div>
+            <div class="name">Daniel · 5,0 / 5</div>
+          </div>
+          <div class="rate">
+            <div class="s h">★☆☆☆☆</div>
+            <div class="name">Hendrik · 1,0 / 5</div>
+          </div>
+        </div>
+      </div>
+      <p class="hero disclaimer" style="text-align:center;padding:0">Alles mit einem Augenzwinkern. Und ein bisschen Stich. Hauptsächlich Stich.</p>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 · Der ehrliche Produktvergleich · Eine höchst objektive Gegenüberstellung</div>
+      <div class="small">
+        Satire &amp; Freundschaftsspott. Kein echtes Testinstitut. Hendrik ist im Grunde in Ordnung —
+        nur eben kleiner, im falschen Add-on und in Achim.
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>
