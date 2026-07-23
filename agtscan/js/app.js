@@ -5,7 +5,7 @@ import {
 } from './ui.js';
 import * as store from './store.js';
 import {
-  isFit, requirementStatus, REQUIREMENTS, deadlineRequirements, fitnessExpiryDate,
+  isFit, requirementStatus, REQUIREMENTS, deadlineRequirements, fitnessExpiryDate, EVENT_TYPES,
 } from './fitness.js';
 import { parseFeuerOn } from './importer.js';
 import { scannerSupported, startScanner } from './scanner.js';
@@ -18,8 +18,9 @@ import { checkDeadlines, requestNotificationPermission } from './notifications.j
 const NAV = [
   { id: 'devices', label: 'Geräte', icon: icons.cube },
   { id: 'persons', label: 'Personen', icon: icons.person },
+  { id: 'events', label: 'Veranstaltungen', short: 'Veranst.', icon: icons.calendar },
   { id: 'appointments', label: 'Termine', icon: icons.clipboard },
-  { id: 'settings', label: 'Einstellungen', icon: icons.gear },
+  { id: 'settings', label: 'Einstellungen', short: 'Einstell.', icon: icons.gear },
 ];
 
 const STATE_META = {
@@ -64,7 +65,7 @@ function buildShell() {
       iconEl(item.icon), el('span', {}, item.label), badge));
   });
   const sidebar = el('aside', { class: 'sidebar' }, brand, nav,
-    el('div', { class: 'sidebar__foot' }, 'Version 0.0.2'));
+    el('div', { class: 'sidebar__foot' }, 'Version 0.0.3'));
 
   backBtn = el('button', { class: 'topbar__back', 'aria-label': 'Zurück', onclick: () => history.back() }, iconEl(icons.chevronLeft));
   topbarTitleEl = el('h1', { class: 'topbar__title' }, 'Geräte');
@@ -80,7 +81,7 @@ function buildShell() {
     const badge = el('span', { class: 'tabbar__badge', dataset: { tabbadge: item.id } });
     badge.style.display = 'none';
     tabbar.append(el('a', { class: 'tabbar__item', href: `#/${item.id}`, dataset: { tab: item.id } },
-      iconEl(item.icon), el('span', {}, item.label), badge));
+      iconEl(item.icon), el('span', {}, item.short || item.label), badge));
   });
 
   root.append(el('div', { class: 'app' }, sidebar, contentEl, tabbar));
@@ -129,6 +130,7 @@ function render() {
 function buildView(route) {
   if (route.section === 'devices') return route.id ? deviceDetailView(route.id) : deviceListView();
   if (route.section === 'persons') return route.id ? personDetailView(route.id) : personListView();
+  if (route.section === 'events') return route.id ? eventDetailView(route.id) : eventsListView();
   if (route.section === 'appointments') return appointmentsView();
   if (route.section === 'settings') return settingsView();
   return deviceListView();
@@ -517,6 +519,158 @@ function addYearsStr(dateStr, years) {
 }
 
 /* ============================================================
+   EVENTS (Veranstaltungen)
+   ============================================================ */
+
+const EVENT_TYPE_BY_ID = Object.fromEntries(EVENT_TYPES.map((t) => [t.id, t]));
+
+function eventsListView() {
+  const events = store.getEvents();
+  const addBtn = el('button', { class: 'icon-btn', 'aria-label': 'Veranstaltung eintragen', onclick: openAddEvent }, iconEl(icons.plus));
+
+  const node = el('div', {});
+  if (!events.length) {
+    node.append(emptyState(icons.calendar, 'Noch keine Veranstaltungen. Tippe auf +, um eine einzutragen.'));
+    return { title: 'Veranstaltungen', actions: [addBtn], node };
+  }
+
+  const list = el('div', { class: 'list' });
+  events.forEach((e) => {
+    const def = EVENT_TYPE_BY_ID[e.type];
+    const count = (e.participants || []).length;
+    list.append(el('a', { class: 'list__row', href: `#/events/${e.id}` },
+      el('div', { class: 'row__main' },
+        el('div', { class: 'row__title' }, def ? def.title : 'Veranstaltung'),
+        el('div', { class: 'row__sub' }, `${formatDate(e.date)} · ${count} ${count === 1 ? 'Person' : 'Personen'}`)),
+      chevron()));
+  });
+  node.append(el('div', { class: 'card' }, list));
+  return { title: 'Veranstaltungen', actions: [addBtn], node };
+}
+
+function eventDetailView(id) {
+  const event = store.getEvent(id);
+  if (!event) return notFoundView('Veranstaltung nicht gefunden', '#/events');
+  const def = EVENT_TYPE_BY_ID[event.type];
+  const participants = event.participants || [];
+  const node = el('div', {});
+
+  node.append(el('div', { class: 'section-title' }, 'Details'));
+  node.append(el('div', { class: 'card' },
+    el('div', { class: 'field field--static' },
+      el('span', { class: 'field__label' }, 'Art'),
+      el('span', { class: 'field__value' }, def ? def.title : '—')),
+    el('div', { class: 'field field--static' },
+      el('span', { class: 'field__label' }, 'Datum'),
+      el('span', { class: 'field__value' }, formatDate(event.date)))));
+
+  node.append(el('div', { class: 'section-title' }, `Teilnehmende (${participants.length})`));
+  const card = el('div', { class: 'card' });
+  if (!participants.length) {
+    card.append(el('div', { class: 'empty', style: 'padding:22px' }, 'Keine Teilnehmenden erfasst.'));
+  } else {
+    const list = el('div', { class: 'list' });
+    participants.forEach((p) => {
+      const exists = store.getPerson(p.id);
+      list.append(el(exists ? 'a' : 'div', {
+        class: 'list__row' + (exists ? '' : ' list__row--static'),
+        href: exists ? `#/persons/${p.id}` : null,
+      },
+        el('div', { class: 'row__main' }, el('div', { class: 'row__title' }, p.name)),
+        exists ? chevron() : null));
+    });
+    card.append(list);
+  }
+  node.append(card);
+
+  node.append(el('div', { style: 'margin-top:28px' },
+    el('button', { class: 'btn btn--danger btn--block', onclick: async () => {
+      if (await confirmDialog({ title: 'Veranstaltung löschen?', message: 'Der Eintrag wird entfernt. Bereits aktualisierte Tauglichkeitsdaten der Personen bleiben unverändert.', confirmLabel: 'Löschen', danger: true })) {
+        store.deleteEvent(event.id);
+        toast('Veranstaltung gelöscht');
+        go('#/events');
+      }
+    } }, iconEl(icons.trash), 'Veranstaltung löschen')));
+
+  return { title: def ? def.title : 'Veranstaltung', back: true, node };
+}
+
+function openAddEvent() {
+  const persons = store.getPersons();
+  if (!persons.length) {
+    confirmDialog({ title: 'Keine Personen', message: 'Lege zuerst Personen an, bevor du eine Veranstaltung einträgst.', confirmLabel: 'OK' });
+    return;
+  }
+
+  const selected = new Set();
+  openModal((close) => {
+    const modal = el('div', { class: 'modal' });
+
+    const typeSelect = el('select', { class: 'select' },
+      ...EVENT_TYPES.map((t) => el('option', { value: t.id }, t.title)));
+
+    const dateInput = el('input', { class: 'input', type: 'date', value: toDateInput(new Date()) });
+
+    const countLabel = el('span', { class: 'checklist__count' }, '0 ausgewählt');
+    const updateCount = () => { countLabel.textContent = `${selected.size} von ${persons.length} ausgewählt`; };
+
+    const checklist = el('div', { class: 'checklist' });
+    const boxes = [];
+    persons.forEach((p) => {
+      const cb = el('input', { type: 'checkbox' });
+      boxes.push(cb);
+      cb.addEventListener('change', () => {
+        if (cb.checked) selected.add(p.id); else selected.delete(p.id);
+        updateCount();
+      });
+      checklist.append(el('label', { class: 'check-row' },
+        cb, el('span', { class: 'check-row__name' }, p.firstName + ' ' + p.lastName)));
+    });
+
+    const toggleAll = el('button', { type: 'button', class: 'btn btn--subtle checklist__all', onclick: () => {
+      const selectAll = selected.size !== persons.length;
+      selected.clear();
+      boxes.forEach((cb, i) => {
+        cb.checked = selectAll;
+        if (selectAll) selected.add(persons[i].id);
+      });
+      updateCount();
+    } }, 'Alle');
+    updateCount();
+
+    const submit = () => {
+      if (!dateInput.value) { dateInput.focus(); return; }
+      if (selected.size === 0) { toast('Bitte mindestens eine Person auswählen'); return; }
+      const n = selected.size;
+      store.addEvent({ type: typeSelect.value, date: fromDateInput(dateInput.value), participantIds: [...selected] });
+      toast(`Veranstaltung eingetragen — ${n} ${n === 1 ? 'Tauglichkeit' : 'Tauglichkeiten'} aktualisiert`);
+      close();
+    };
+
+    modal.append(
+      el('div', { class: 'modal__head' },
+        el('div', { class: 'modal__title' }, 'Veranstaltung eintragen'),
+        el('button', { class: 'modal__close', onclick: close, 'aria-label': 'Schließen' }, iconEl(icons.x))),
+      el('div', { class: 'modal__body' },
+        el('div', { class: 'form-group' }, el('label', { class: 'label' }, 'Art der Veranstaltung'), typeSelect),
+        el('div', { class: 'form-group' }, el('label', { class: 'label' }, 'Datum'), dateInput),
+        el('div', { class: 'form-group' },
+          el('div', { class: 'checklist__head' },
+            el('label', { class: 'label', style: 'margin-bottom:0' }, 'Teilnehmende'),
+            countLabel, toggleAll),
+          checklist),
+        el('p', { style: 'color:var(--text-3);font-size:0.82rem;line-height:1.4' },
+          'Bei allen ausgewählten Personen wird das jeweilige Nachweisdatum auf das Veranstaltungsdatum gesetzt.'),
+      ),
+      el('div', { class: 'modal__foot' },
+        el('button', { class: 'btn btn--ghost', onclick: close }, 'Abbrechen'),
+        el('button', { class: 'btn btn--primary', onclick: submit }, 'Eintragen')),
+    );
+    return modal;
+  });
+}
+
+/* ============================================================
    APPOINTMENTS
    ============================================================ */
 
@@ -656,7 +810,7 @@ function settingsView() {
   node.append(el('div', { class: 'card' },
     el('div', { class: 'field field--static' },
       el('span', { class: 'field__label' }, 'Version'),
-      el('span', { class: 'field__value' }, '0.0.2')),
+      el('span', { class: 'field__value' }, '0.0.3')),
     el('div', { class: 'field field--static' },
       el('span', { class: 'field__label' }, 'Geräte'),
       el('span', { class: 'field__value' }, String(store.getDevices().length))),

@@ -1,10 +1,13 @@
 // Data layer — localStorage-backed, with a change subscription.
 
+import { EVENT_TYPES } from './fitness.js';
+
 const KEY = 'agtscan.data.v1';
 
 const defaultData = () => ({
   devices: [],
   persons: [],
+  events: [],
   settings: { deviceNotifications: true, personNotifications: true },
 });
 
@@ -24,6 +27,7 @@ function load() {
     return {
       devices: Array.isArray(parsed.devices) ? parsed.devices : [],
       persons: Array.isArray(parsed.persons) ? parsed.persons : [],
+      events: Array.isArray(parsed.events) ? parsed.events : [],
       settings: Object.assign({ deviceNotifications: true, personNotifications: true }, parsed.settings || {}),
     };
   } catch {
@@ -146,6 +150,43 @@ export function deletePerson(id) {
   persist();
 }
 
+/* ---------------- Events (Veranstaltungen) ---------------- */
+
+export function getEvents() {
+  // Newest first.
+  return [...data.events].sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
+}
+export function getEvent(id) {
+  return data.events.find((e) => e.id === id) || null;
+}
+
+/**
+ * Record an event and update the matching requirement date for every
+ * participant. Returns the created event (with a name snapshot of participants
+ * so it stays readable even if a person is later deleted).
+ */
+export function addEvent({ type, date, participantIds }) {
+  const def = EVENT_TYPES.find((t) => t.id === type);
+  if (!def || !date) return null;
+  const participants = [];
+  for (const pid of participantIds || []) {
+    const p = getPerson(pid);
+    if (!p) continue;
+    p[def.field] = date;
+    participants.push({ id: p.id, name: p.firstName + ' ' + p.lastName });
+  }
+  const event = { id: uid(), type, date, participants };
+  data.events.push(event);
+  persist();
+  return event;
+}
+
+/** Removes the event log entry. Participant fitness dates are left untouched. */
+export function deleteEvent(id) {
+  data.events = data.events.filter((e) => e.id !== id);
+  persist();
+}
+
 /* ---------------- Settings ---------------- */
 
 export function getSettings() { return { ...data.settings }; }
@@ -159,6 +200,7 @@ export function updateSettings(patch) {
 export function deleteAllData() {
   data.devices = [];
   data.persons = [];
+  data.events = [];
   persist();
 }
 export function importPersons(parsedList) {

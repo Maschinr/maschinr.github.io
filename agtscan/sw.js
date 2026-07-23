@@ -1,5 +1,5 @@
 /* AGTScan Service Worker — offline-first caching */
-const VERSION = 'agtscan-v2';
+const VERSION = 'agtscan-v3';
 const ASSETS = [
   './',
   './index.html',

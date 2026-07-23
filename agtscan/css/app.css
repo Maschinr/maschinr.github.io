@@ -597,6 +597,31 @@ input[type="range"]::-moz-range-thumb {
 .switch input:checked + .switch__slider { background: var(--green); }
 .switch input:checked + .switch__slider::before { transform: translateX(18px); }
 
+/* Participant checklist (Veranstaltungen) */
+.checklist__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.checklist__count { margin-left: auto; font-size: 0.78rem; color: var(--text-3); white-space: nowrap; }
+.checklist__all { padding: 5px 12px; font-size: 0.82rem; }
+.checklist {
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-sm);
+  overflow-y: auto;
+  max-height: 260px;
+  background: var(--surface-2);
+}
+.check-row {
+  display: flex; align-items: center; gap: 12px;
+  padding: 11px 13px;
+  border-bottom: 1px solid var(--border);
+  cursor: pointer;
+}
+.check-row:last-child { border-bottom: none; }
+.check-row:hover { background: var(--surface-hover); }
+.check-row input[type="checkbox"] {
+  width: 20px; height: 20px; flex: none;
+  accent-color: var(--accent); cursor: pointer;
+}
+.check-row__name { font-size: 0.95rem; }
+
 /* Scanner */
 .scanner {
   position: relative;
@@ -705,6 +730,7 @@ input[type="range"]::-moz-range-thumb {
     position: relative;
   }
   .tabbar__item svg { width: 25px; height: 25px; }
+  .tabbar__item span { max-width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .tabbar__item.active { color: var(--accent); }
   .tabbar__badge {
     position: absolute;

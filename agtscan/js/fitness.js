@@ -56,6 +56,18 @@ export const REQUIREMENTS = [
 ];
 
 /**
+ * Event types that can be recorded on the Veranstaltungen page. Recording an
+ * event updates the matching requirement date for every participant.
+ * `field` is the Person date field, mirroring REQUIREMENTS above.
+ */
+export const EVENT_TYPES = [
+  { id: 'theory', title: 'Theoretische Unterweisung', field: 'theoryDate' },
+  { id: 'operation', title: 'Einsatz unter Atemschutz', field: 'operationDate' },
+  { id: 'exercise', title: 'Übung unter Atemschutz', field: 'exerciseDate' },
+  { id: 'course', title: 'Streckendurchlauf', field: 'courseDate' },
+];
+
+/**
  * Per-field status for the detail view.
  *  'valid'     — green, within validity window
  *  'expired'   — red, expired/missing and responsible for untauglichkeit
