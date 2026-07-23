@@ -523,6 +523,14 @@ p { margin: 0; }
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
 .textarea { resize: vertical; min-height: 84px; }
+/* Native date inputs have an intrinsic min-width from their picker UI that
+   overflows narrow containers; allow them to shrink to the available width. */
+.input[type="date"] {
+  min-width: 0;
+  max-width: 100%;
+  -webkit-appearance: none;
+  appearance: none;
+}
 
 .seg { display: flex; gap: 6px; }
 .seg__opt {
