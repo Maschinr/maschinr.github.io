@@ -1,0 +1,17 @@
+{
+  "name": "Budget Rechner",
+  "short_name": "Budget",
+  "description": "Kleiner Budget-Rechner: Konten und regelmäßige Zahlungen verwalten und die Bilanz im Blick behalten.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f2f4f7",
+  "theme_color": "#0f9d6e",
+  "lang": "de",
+  "categories": ["finance", "productivity", "utilities"],
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
