@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>MAGES STINKEN — Die Einstiegsdroge für Minderbegabte | Aufklärungskampagne</title>
+  <meta name="description" content="Eine Präventionskampagne der Bundeszentrale für arkane Aufklärung. Erkennen Sie die Anzeichen, bevor es zu spät ist." />
+  <meta name="robots" content="noindex" />
+  <meta name="theme-color" content="#0a0c11" />
+
+  <style>
+    :root{
+      --bg:#0a0c11;
+      --bg-soft:#101319;
+      --card:#141824;
+      --card-2:#1a2030;
+      --line:#242b3b;
+      --line-2:#323b50;
+      --txt:#eef1f7;
+      --muted:#95a0b5;
+      --dim:#5d6880;
+
+      --hazard:#f5c518;      /* Warnfarbe */
+      --danger:#ff4d5e;      /* Alarm */
+      --mage:#5ec8f2;        /* arkanes Blau — die Substanz */
+      --ok:#3ad695;          /* gesunde Klassen */
+      --ok-soft:rgba(58,214,149,.10);
+      --danger-soft:rgba(255,77,94,.10);
+      --hazard-soft:rgba(245,197,24,.10);
+      --mage-soft:rgba(94,200,242,.10);
+
+      --radius:18px;
+      --maxw:1120px;
+      --font:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;
+      font-family:var(--font);
+      color:var(--txt);
+      background:
+        radial-gradient(1100px 560px at 12% -10%, rgba(245,197,24,.07), transparent 60%),
+        radial-gradient(900px 640px at 100% 4%, rgba(94,200,242,.06), transparent 55%),
+        var(--bg);
+      line-height:1.55;
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    a{color:inherit}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+    /* ---------- Hazard-Band ---------- */
+    .hazard-tape{
+      height:14px;
+      background:repeating-linear-gradient(
+        45deg,
+        var(--hazard) 0 18px,
+        #0a0c11 18px 36px
+      );
+      opacity:.85;
+    }
+
+    /* ---------- Nav ---------- */
+    header.nav{
+      position:sticky;top:0;z-index:50;
+      backdrop-filter:saturate(140%) blur(12px);
+      background:rgba(10,12,17,.78);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:60px;gap:16px}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:700;letter-spacing:.2px;font-size:14.5px}
+    .brand .seal{
+      width:26px;height:26px;border-radius:7px;flex:0 0 auto;
+      background:linear-gradient(135deg,var(--hazard),#c98f06);
+      display:grid;place-items:center;color:#12141a;font-weight:900;font-size:13px;
+    }
+    .brand small{display:block;font-weight:500;color:var(--dim);font-size:11px;letter-spacing:.06em;text-transform:uppercase}
+    .nav-links{display:flex;gap:24px;font-size:13.5px;color:var(--muted)}
+    .nav-links a{text-decoration:none}
+    .nav-links a:hover{color:var(--txt)}
+    .nav-cta{
+      font-size:13px;font-weight:700;color:#12141a;
+      background:linear-gradient(135deg,var(--hazard),#e0a806);
+      padding:9px 15px;border-radius:999px;text-decoration:none;white-space:nowrap;
+    }
+    @media(max-width:900px){.nav-links{display:none}}
+    @media(max-width:420px){.nav-cta{display:none}}
+
+    /* ---------- Hero ---------- */
+    .hero{padding:64px 0 30px;text-align:center}
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:9px;
+      font-size:12px;letter-spacing:.16em;text-transform:uppercase;font-weight:700;
+      color:var(--hazard);border:1px solid rgba(245,197,24,.35);padding:7px 15px;border-radius:999px;
+      background:var(--hazard-soft);margin-bottom:24px;
+    }
+    .blink{width:8px;height:8px;border-radius:50%;background:var(--danger);animation:pulse 1.4s infinite}
+    @keyframes pulse{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(255,77,94,.5)}50%{opacity:.45;box-shadow:0 0 0 7px rgba(255,77,94,0)}}
+    .hero h1{
+      font-size:clamp(36px,7.2vw,74px);line-height:1.02;margin:0 0 20px;font-weight:900;letter-spacing:-.03em;
+    }
+    .hero h1 .warn{color:var(--danger)}
+    .hero h1 .arc{
+      background:linear-gradient(120deg,var(--mage),#a58bff);
+      -webkit-background-clip:text;background-clip:text;color:transparent;
+    }
+    .hero p.lead{
+      max-width:760px;margin:0 auto 30px;color:var(--muted);font-size:clamp(16px,2.1vw,19px);
+    }
+    .hero-cta{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-bottom:34px}
+    .btn{
+      display:inline-block;padding:13px 24px;border-radius:999px;text-decoration:none;
+      font-weight:700;font-size:14.5px;border:1px solid var(--line-2);color:var(--txt);
+      background:var(--card);transition:transform .15s ease,border-color .15s ease;
+    }
+    .btn:hover{transform:translateY(-1px);border-color:var(--line-2)}
+    .btn.primary{background:linear-gradient(135deg,var(--hazard),#e0a806);color:#12141a;border-color:transparent}
+
+    /* Warnhinweis-Kasten im Zigarettenpackungs-Stil */
+    .pack-warning{
+      max-width:820px;margin:0 auto;border:3px solid var(--txt);background:#000;
+      padding:26px 24px;text-align:left;border-radius:6px;
+    }
+    .pack-warning .pw-label{
+      font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;
+      color:var(--muted);margin-bottom:10px;
+    }
+    .pack-warning h2{
+      margin:0 0 10px;font-size:clamp(20px,3.6vw,30px);font-weight:900;letter-spacing:-.01em;line-height:1.18;
+    }
+    .pack-warning p{margin:0;color:#c8cfdd;font-size:14.5px}
+
+    /* ---------- Sections ---------- */
+    section.block{padding:66px 0;border-top:1px solid var(--line)}
+    .kicker{
+      font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;
+      color:var(--hazard);margin-bottom:12px;
+    }
+    .kicker.alt{color:var(--mage)}
+    .kicker.dgr{color:var(--danger)}
+    h3.title{font-size:clamp(25px,4.2vw,40px);margin:0 0 14px;font-weight:800;letter-spacing:-.022em;line-height:1.12}
+    p.intro{color:var(--muted);max-width:800px;font-size:16.5px;margin:0 0 32px}
+
+    /* ---------- Statistik ---------- */
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    @media(max-width:900px){.stats{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:470px){.stats{grid-template-columns:1fr}}
+    .stat{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      padding:22px 20px;position:relative;overflow:hidden;
+    }
+    .stat::before{content:"";position:absolute;inset:0 auto 0 0;width:3px;background:var(--danger)}
+    .stat .num{font-size:clamp(30px,4.6vw,42px);font-weight:900;letter-spacing:-.03em;line-height:1;color:var(--danger)}
+    .stat .lbl{margin-top:10px;font-size:14px;color:var(--muted)}
+    .stat .src{margin-top:12px;font-family:var(--mono);font-size:10.5px;color:var(--dim)}
+
+    /* ---------- Suchtverlauf ---------- */
+    .stages{display:flex;flex-direction:column;gap:0;position:relative;margin-top:6px}
+    .stage{
+      display:grid;grid-template-columns:78px 1fr;gap:20px;padding:22px 0;border-bottom:1px dashed var(--line);
+    }
+    .stage:last-child{border-bottom:0}
+    .stage-no{
+      width:56px;height:56px;border-radius:14px;display:grid;place-items:center;
+      font-family:var(--mono);font-weight:800;font-size:17px;
+      background:var(--card-2);border:1px solid var(--line-2);color:var(--muted);
+    }
+    .stage.s1 .stage-no{color:var(--hazard);border-color:rgba(245,197,24,.35);background:var(--hazard-soft)}
+    .stage.s2 .stage-no{color:#ffab4d;border-color:rgba(255,171,77,.35);background:rgba(255,171,77,.08)}
+    .stage.s3 .stage-no,.stage.s4 .stage-no,.stage.s5 .stage-no{color:var(--danger);border-color:rgba(255,77,94,.38);background:var(--danger-soft)}
+    .stage h4{margin:2px 0 6px;font-size:18.5px;font-weight:750;letter-spacing:-.01em}
+    .stage p{margin:0;color:var(--muted);font-size:15px}
+    .stage .quote{
+      margin-top:12px;padding:11px 14px;border-left:2px solid var(--line-2);
+      background:var(--bg-soft);border-radius:0 10px 10px 0;
+      font-style:italic;color:#c3ccdb;font-size:14.5px;
+    }
+    @media(max-width:600px){
+      .stage{grid-template-columns:1fr;gap:12px}
+      .stage-no{width:46px;height:46px;font-size:15px}
+    }
+
+    /* ---------- Klassenvergleich ---------- */
+    .classes{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media(max-width:940px){.classes{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:620px){.classes{grid-template-columns:1fr}}
+    .cls{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);
+      padding:20px;display:flex;flex-direction:column;gap:10px;
+    }
+    .cls-top{display:flex;align-items:center;gap:11px}
+    .cls-dot{width:11px;height:11px;border-radius:50%;flex:0 0 auto}
+    .cls h4{margin:0;font-size:17px;font-weight:750;flex:1}
+    .badge{
+      font-size:10.5px;font-family:var(--mono);letter-spacing:.09em;text-transform:uppercase;
+      padding:4px 9px;border-radius:999px;white-space:nowrap;font-weight:700;
+    }
+    .badge.ok{background:var(--ok-soft);color:var(--ok);border:1px solid rgba(58,214,149,.28)}
+    .badge.bad{background:var(--danger-soft);color:var(--danger);border:1px solid rgba(255,77,94,.32)}
+    .cls p{margin:0;color:var(--muted);font-size:14.3px}
+    .cls .role{font-family:var(--mono);font-size:11px;color:var(--dim);letter-spacing:.05em;text-transform:uppercase}
+    .cls.mage{
+      border-color:rgba(255,77,94,.45);
+      background:linear-gradient(180deg,rgba(255,77,94,.07),var(--card) 55%);
+      grid-column:1/-1;
+    }
+    .cls.mage h4{font-size:20px}
+    .cls.mage .cls-mage-body{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:4px}
+    @media(max-width:700px){.cls.mage .cls-mage-body{grid-template-columns:1fr}}
+    .mini{
+      background:var(--bg-soft);border:1px solid var(--line);border-radius:12px;padding:13px 15px;
+    }
+    .mini .who{font-family:var(--mono);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--dim);margin-bottom:5px}
+    .mini .val{font-size:14px;color:#c6ceda}
+
+    /* ---------- Tabelle ---------- */
+    .table-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:var(--radius);background:var(--card)}
+    table{border-collapse:collapse;width:100%;min-width:640px;font-size:14.3px}
+    th,td{padding:13px 16px;text-align:left;border-bottom:1px solid var(--line)}
+    thead th{
+      font-family:var(--mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;
+      color:var(--dim);background:var(--bg-soft);font-weight:600;
+    }
+    tbody tr:last-child td{border-bottom:0}
+    tbody tr.mage-row{background:var(--danger-soft)}
+    tbody tr.mage-row td{color:#ffd3d8}
+    td.val-ok{color:var(--ok);font-weight:600}
+    td.val-bad{color:var(--danger);font-weight:600}
+    td strong{color:var(--txt)}
+
+    /* ---------- Selbsttest ---------- */
+    .quiz{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:26px 24px;
+    }
+    .quiz h4{margin:0 0 6px;font-size:19px;font-weight:750}
+    .quiz .hint{color:var(--muted);font-size:14.5px;margin:0 0 20px}
+    .q-item{
+      display:flex;align-items:flex-start;gap:12px;padding:12px 14px;border-radius:12px;
+      border:1px solid var(--line);background:var(--bg-soft);margin-bottom:9px;cursor:pointer;
+      transition:border-color .15s ease,background .15s ease;
+    }
+    .q-item:hover{border-color:var(--line-2)}
+    .q-item input{
+      appearance:none;-webkit-appearance:none;width:19px;height:19px;flex:0 0 auto;margin:2px 0 0;
+      border:1.6px solid var(--line-2);border-radius:5px;background:transparent;cursor:pointer;position:relative;
+    }
+    .q-item input:checked{background:var(--danger);border-color:var(--danger)}
+    .q-item input:checked::after{
+      content:"✓";position:absolute;inset:0;display:grid;place-items:center;
+      color:#0a0c11;font-size:13px;font-weight:900;
+    }
+    .q-item span{font-size:14.6px;color:#c9d1de}
+    .q-item:has(input:checked){border-color:rgba(255,77,94,.4);background:var(--danger-soft)}
+    .result{
+      margin-top:18px;padding:18px 20px;border-radius:14px;border:1px solid var(--line-2);
+      background:var(--card-2);
+    }
+    .result .rtitle{font-weight:800;font-size:17px;margin-bottom:6px}
+    .result .rtext{color:var(--muted);font-size:14.5px}
+    .result .score{font-family:var(--mono);font-size:11.5px;letter-spacing:.1em;text-transform:uppercase;color:var(--dim);margin-bottom:9px}
+
+    /* ---------- Erfahrungsberichte ---------- */
+    .cards{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+    @media(max-width:940px){.cards{grid-template-columns:1fr 1fr}}
+    @media(max-width:620px){.cards{grid-template-columns:1fr}}
+    .card{
+      background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:22px 20px;
+      display:flex;flex-direction:column;gap:12px;
+    }
+    .card .quotemark{font-size:34px;line-height:1;color:var(--line-2);font-weight:900}
+    .card p{margin:0;font-size:14.6px;color:#c8d0dd}
+    .card .by{display:flex;align-items:center;gap:10px;margin-top:auto;padding-top:8px;border-top:1px solid var(--line)}
+    .avatar{
+      width:34px;height:34px;border-radius:50%;flex:0 0 auto;display:grid;place-items:center;
+      font-size:13px;font-weight:800;color:#0a0c11;background:linear-gradient(135deg,var(--ok),#1fa877);
+    }
+    .avatar.b{background:linear-gradient(135deg,var(--hazard),#c98f06)}
+    .avatar.c{background:linear-gradient(135deg,#a58bff,#6b4df0);color:#fff}
+    .by .n{font-size:13.5px;font-weight:650}
+    .by .r{font-size:11.5px;color:var(--dim);font-family:var(--mono)}
+
+    /* ---------- Mythen ---------- */
+    .myths{display:flex;flex-direction:column;gap:12px}
+    .myth{
+      border:1px solid var(--line);border-radius:var(--radius);background:var(--card);overflow:hidden;
+    }
+    .myth .m{padding:16px 20px;display:flex;gap:12px;align-items:flex-start;border-bottom:1px solid var(--line)}
+    .myth .f{padding:16px 20px;display:flex;gap:12px;align-items:flex-start;background:var(--bg-soft)}
+    .tagm{
+      font-family:var(--mono);font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;font-weight:700;
+      padding:3px 8px;border-radius:6px;flex:0 0 auto;margin-top:2px;
+    }
+    .tagm.myth-t{background:var(--hazard-soft);color:var(--hazard);border:1px solid rgba(245,197,24,.3)}
+    .tagm.fact-t{background:var(--ok-soft);color:var(--ok);border:1px solid rgba(58,214,149,.28)}
+    .myth p{margin:0;font-size:14.8px}
+    .myth .m p{color:#c9d1de;font-style:italic}
+    .myth .f p{color:var(--muted)}
+
+    /* ---------- Hilfe ---------- */
+    .help{
+      border:1px solid rgba(58,214,149,.3);border-radius:22px;
+      background:linear-gradient(180deg,rgba(58,214,149,.09),var(--card) 60%);
+      padding:38px 30px;text-align:center;
+    }
+    .help h3{margin:0 0 12px;font-size:clamp(23px,3.6vw,33px);font-weight:850;letter-spacing:-.02em}
+    .help p{color:var(--muted);max-width:620px;margin:0 auto 22px;font-size:15.5px}
+    .hotline{
+      display:inline-block;font-family:var(--mono);font-size:clamp(19px,3.4vw,27px);font-weight:700;
+      color:var(--ok);border:1px dashed rgba(58,214,149,.4);padding:12px 22px;border-radius:14px;
+      background:rgba(58,214,149,.06);letter-spacing:.02em;
+    }
+    .steps{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:28px;text-align:left}
+    @media(max-width:820px){.steps{grid-template-columns:1fr 1fr}}
+    @media(max-width:480px){.steps{grid-template-columns:1fr}}
+    .step{background:var(--bg-soft);border:1px solid var(--line);border-radius:14px;padding:16px}
+    .step .sn{font-family:var(--mono);font-size:11px;color:var(--ok);letter-spacing:.1em;margin-bottom:7px}
+    .step p{margin:0;font-size:13.8px;color:var(--muted);text-align:left}
+
+    /* ---------- Fazit ---------- */
+    .verdict{
+      border:1px solid var(--line-2);border-radius:22px;background:var(--card);
+      padding:40px 32px;text-align:center;
+    }
+    .verdict .score{font-family:var(--mono);font-size:11.5px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin-bottom:14px}
+    .verdict h3{margin:0 0 14px;font-size:clamp(24px,4vw,38px);font-weight:850;letter-spacing:-.025em}
+    .verdict h3 .arc{background:linear-gradient(120deg,var(--mage),#a58bff);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .verdict p{color:var(--muted);max-width:700px;margin:0 auto;font-size:15.5px}
+    .stamp{
+      display:inline-block;margin-top:26px;transform:rotate(-6deg);
+      border:3px solid var(--danger);color:var(--danger);border-radius:10px;
+      padding:9px 20px;font-family:var(--mono);font-weight:800;letter-spacing:.12em;
+      text-transform:uppercase;font-size:14px;opacity:.9;
+    }
+
+    /* ---------- Footer ---------- */
+    footer{border-top:1px solid var(--line);padding:34px 0 46px;color:var(--dim);font-size:13px;text-align:center}
+    footer .small{margin-top:9px;font-size:12px;max-width:720px;margin-left:auto;margin-right:auto;line-height:1.6}
+    footer a{color:var(--muted)}
+  </style>
+</head>
+<body>
+
+  <div class="hazard-tape"></div>
+
+  <header class="nav">
+    <div class="wrap nav-inner">
+      <div class="brand">
+        <div class="seal">!</div>
+        <div>
+          MAGES STINKEN
+          <small>Bundeszentrale für arkane Aufklärung</small>
+        </div>
+      </div>
+      <nav class="nav-links">
+        <a href="#fakten">Fakten</a>
+        <a href="#verlauf">Suchtverlauf</a>
+        <a href="#klassen">Klassenvergleich</a>
+        <a href="#selbsttest">Selbsttest</a>
+        <a href="#hilfe">Hilfe</a>
+      </nav>
+      <a class="nav-cta" href="#selbsttest">Bin ich gefährdet?</a>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="eyebrow"><span class="blink"></span> Öffentliche Warnung · Stufe Rot</div>
+      <h1>
+        Erst ein <span class="arc">Frostblitz</span>.<br />
+        Dann der <span class="warn">Persönlichkeitsverlust</span>.
+      </h1>
+      <p class="lead">
+        Jeden Tag erstellen tausende Menschen in WoW Classic ihren ersten Magier. Die meisten sagen sich:
+        „Nur bis Level 20. Nur zum Farmen. Ich hab das im Griff.“ Zwölf Wochen später erklären sie
+        wildfremden Menschen im Handelschannel ungefragt ihre DPS. Diese Seite soll das verhindern.
+      </p>
+      <div class="hero-cta">
+        <a class="btn primary" href="#selbsttest">Selbsttest starten</a>
+        <a class="btn" href="#klassen">Gesunde Alternativen ansehen</a>
+      </div>
+
+      <div class="pack-warning">
+        <div class="pw-label">Warnhinweis gemäß §1 Arkanschutzgesetz</div>
+        <h2>Magier spielen senkt nachweislich den IQ und schädigt Sie und Ihre Gruppe.</h2>
+        <p>
+          Nebenwirkungen umfassen: unbegründetes Überlegenheitsgefühl, Verlust der Fähigkeit zum
+          Ausweichen aus Flächenschaden, sowie die zwanghafte Behauptung, man habe „gecarried“,
+          während der Krieger neben einem drei Adds getankt hat.
+        </p>
+      </div>
+    </section>
+
+    <!-- FAKTEN -->
+    <section class="block" id="fakten">
+      <div class="kicker dgr">Kapitel 1 — Die Zahlen</div>
+      <h3 class="title">Das Ausmaß des Problems</h3>
+      <p class="intro">
+        Die Datenlage ist eindeutig, und sie ist unangenehm. Wir haben über mehrere Raidtage hinweg
+        Verhalten beobachtet, ausgewertet und uns dabei mehrfach fremdgeschämt. Die Ergebnisse
+        veröffentlichen wir hier zum ersten Mal.
+      </p>
+
+      <div class="stats">
+        <div class="stat">
+          <div class="num">4</div>
+          <div class="lbl">Tasten, die ein Magier im Endgame durchschnittlich benötigt. Zwei davon sind Essen und Wasser.</div>
+          <div class="src">Erhebung: Molten Core, 40 Spieler</div>
+        </div>
+        <div class="stat">
+          <div class="num">87 %</div>
+          <div class="lbl">aller Magier erklären ungefragt, dass sie „eigentlich unterspielt sind wegen der Gruppe“.</div>
+          <div class="src">Selbstauskunft, ungeprüft</div>
+        </div>
+        <div class="stat">
+          <div class="num">–14</div>
+          <div class="lbl">IQ-Punkte im Mittel nach 200 Spielstunden. Der Effekt gilt als irreversibel.</div>
+          <div class="src">Längsschnittstudie, n=1 (er weiß Bescheid)</div>
+        </div>
+        <div class="stat">
+          <div class="num">0</div>
+          <div class="lbl">Momente, in denen die Gruppe rief: „Gott sei Dank haben wir den Magier dabei.“</div>
+          <div class="src">Vollerhebung, alle Instanzen</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUCHTVERLAUF -->
+    <section class="block" id="verlauf">
+      <div class="kicker">Kapitel 2 — Der Verlauf</div>
+      <h3 class="title">Fünf Stufen. Niemand plant Stufe fünf.</h3>
+      <p class="intro">
+        Kein Mensch loggt sich ein und denkt: „Heute zerstöre ich meine Persönlichkeit.“ Es beginnt harmlos,
+        fast beiläufig — und genau das macht die Einstiegsdroge so gefährlich. Der Verlauf ist bei nahezu
+        allen Betroffenen identisch.
+      </p>
+
+      <div class="stages">
+        <div class="stage s1">
+          <div class="stage-no">01</div>
+          <div>
+            <h4>Der Einstieg — „nur zum Farmen“</h4>
+            <p>
+              Ein Freund sagt, mit dem Magier sei Leveln „viel entspannter“. Und ja: Es ist entspannter.
+              Genau das ist das Problem. Der Betroffene erlebt zum ersten Mal Erfolg ohne Anstrengung.
+              Das Gehirn merkt sich das.
+            </p>
+            <div class="quote">„Ich mach mir nur einen Twink zum Goldfarmen. Mein Main bleibt der Krieger.“</div>
+          </div>
+        </div>
+
+        <div class="stage s2">
+          <div class="stage-no">02</div>
+          <div>
+            <h4>Die Gewöhnung — Portale als Sozialkontakt</h4>
+            <p>
+              Der Betroffene stellt fest, dass Menschen ihn ansprechen. Nicht ihn, natürlich — sein Portal.
+              Aber der Unterschied verschwimmt. Erstmals verwechselt er Nützlichkeit mit Beliebtheit.
+              Er beginnt, für Portale Trinkgeld zu verlangen, und nennt das „Marktwirtschaft“.
+            </p>
+            <div class="quote">„5 Gold für Ironforge. Ich mach's ja nicht umsonst, meine Zeit ist auch was wert.“</div>
+          </div>
+        </div>
+
+        <div class="stage s3">
+          <div class="stage-no">03</div>
+          <div>
+            <h4>Die Abhängigkeit — Recount wird zum Lebensinhalt</h4>
+            <p>
+              Ab hier ist der Schaden strukturell. Der Betroffene misst seinen Wert als Mensch in einer
+              Zahl, die ein Add-on ausrechnet. Er postet sie nach jedem Kampf. Ungefragt. Immer. Der Heiler,
+              der die Gruppe zwölf Minuten am Leben gehalten hat, taucht in dieser Zahl nicht auf — also
+              existiert er für den Magier auch nicht.
+            </p>
+            <div class="quote">„Wenn ihr mal auf Recount schaut, sieht man ja wohl deutlich, wer hier den Boss gelegt hat.“</div>
+          </div>
+        </div>
+
+        <div class="stage s4">
+          <div class="stage-no">04</div>
+          <div>
+            <h4>Der Realitätsverlust — „Skillklasse“</h4>
+            <p>
+              Der Betroffene beginnt allen Ernstes zu behaupten, seine Klasse erfordere Können.
+              Er spricht von „Rotation“ bei einem Zauber, den er gedrückt hält. Er nennt Schafe „Crowd Control
+              auf hohem Niveau“, obwohl er beim letzten Versuch den bereits verzauberten Gegner erneut
+              verzaubert und damit den Wipe ausgelöst hat.
+            </p>
+            <div class="quote">„Frostblitz ist mechanisch echt anspruchsvoll, das kann nicht jeder. Ist wie Schach.“</div>
+          </div>
+        </div>
+
+        <div class="stage s5">
+          <div class="stage-no">05</div>
+          <div>
+            <h4>Die Endstufe — der Charakter ist verdorben</h4>
+            <p>
+              Der Mensch ist weg. Zurück bleibt eine Entität in Stoffrüstung, die im Schlachtzugschat
+              erklärt, warum der Wipe nicht an ihr lag, obwohl sie als Einzige im Feuer stand. Sie bettelt
+              gleichzeitig um Wasser-Trinkgeld und um Anerkennung. Sie bekommt beides nicht. Es ist zu spät.
+            </p>
+            <div class="quote">„War nicht mein Fehler, ich hatte doch Eisblock. Wo waren denn die Heals?!“</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- KLASSENVERGLEICH -->
+    <section class="block" id="klassen">
+      <div class="kicker alt">Kapitel 3 — Die gesunden Alternativen</div>
+      <h3 class="title">Jede Klasse in Classic hat ihre Daseinsberechtigung. Jede.</h3>
+      <p class="intro">
+        Das Bemerkenswerte an WoW Classic ist, wie gut das Klassendesign funktioniert. Jede Klasse bringt
+        etwas mit, das die Gruppe ohne sie schmerzlich vermissen würde. Jede erfordert Verständnis,
+        Vorbereitung und Verantwortung. Und dann gibt es eine Klasse, bei der man versehentlich
+        vergisst, dass sie dabei ist — bis sie es einem im Chat mitteilt.
+      </p>
+
+      <div class="classes">
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#c69b6d"></span><h4>Krieger</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Tank · Nahkampf-DPS</div>
+          <p>
+            Hält alles aus, damit andere nichts aushalten müssen. Muss Bedrohung managen, Ausrüstung
+            wechseln, Haltungen tauschen und dabei ruhig bleiben, während neun Leute Fehler machen.
+            Der Krieger blutet, damit ihr steht.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#f48cba"></span><h4>Paladin</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Heiler · Support · Notfalltank</div>
+          <p>
+            Der ruhige Fels der Allianz. Auren, Segen, Handauflegung — der Paladin verteilt permanent
+            Nutzen, den nie jemand im Schadensmesser sieht. Er beschwert sich trotzdem nicht.
+            Das nennt man Charakter.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#0070de"></span><h4>Schamane</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Heiler · Support · Elementar</div>
+          <p>
+            Totems sind Gruppenarbeit in Reinform: Jeder Vorteil, den ein Schamane setzt, ist für andere.
+            Er denkt in Positionen, Reichweiten und Bedürfnissen. Er denkt, kurz gesagt, an das Team.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#aad372"></span><h4>Jäger</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Fernkampf-DPS · Kiten · Pull</div>
+          <p>
+            Kiten, Fallen, Misdirect-Pulls, Tiere zähmen und füttern — der Jäger übernimmt die Aufgaben,
+            die schiefgehen, wenn niemand sie übernimmt. Ja, er würfelt manchmal auf die falsche Rüstung.
+            Er entschuldigt sich dann aber wenigstens.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#fff468"></span><h4>Schurke</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Nahkampf-DPS · Kontrolle · Utility</div>
+          <p>
+            Sappen, Unterbrechen, Schlösser knacken, Gift auftragen, Energie im Blick behalten. Der Schurke
+            arbeitet mit einem Ressourcensystem, das ihn ständig bestraft. Er lernt daraus. Das ist der
+            entscheidende Unterschied.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#fff"></span><h4>Priester</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Heiler · Schattenmagie</div>
+          <p>
+            Trägt die Gruppe durch jede Instanz und wird dafür genau dann bemerkt, wenn jemand stirbt.
+            Der Priester ist die stille Voraussetzung dafür, dass alle anderen glauben, sie seien gut.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#8788ee"></span><h4>Hexenmeister</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Fernkampf-DPS · Kontrolle · Beschwörung</div>
+          <p>
+            Auch ein Stoffträger — und trotzdem das genaue Gegenteil. Verwaltet Dämonen, Fluchprioritäten,
+            Verbannungen, Seelensteine, Beschwörungen und die eigene Lebensenergie als Ressource.
+            Der Hexenmeister beweist: Es liegt nicht am Stoff. Es liegt am Magier.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#ff7c0a"></span><h4>Druide</h4><span class="badge ok">Unverzichtbar</span></div>
+          <div class="role">Alles. Wirklich alles.</div>
+          <p>
+            Tankt, heilt, macht Schaden, wiederbelebt mitten im Kampf, verwandelt sich in einen Geparden,
+            wenn die Flagge weg muss. Vier Rollen, eine Leiste, null Beschwerden. Der Druide ist der
+            lebende Beweis, dass Vielseitigkeit Demut erzeugt.
+          </p>
+        </div>
+
+        <div class="cls">
+          <div class="cls-top"><span class="cls-dot" style="background:#3fc7eb"></span><h4>Magier</h4><span class="badge bad">Keine Daseinsberechtigung</span></div>
+          <div class="role">Getränkeautomat · Reisebüro · Schadensmesser-Poet</div>
+          <p style="max-width:820px">
+            Und dann sitzt da der Magier. Zwei Zauber im Wechsel, keine Ressource, die ihn je zu einer
+            Entscheidung zwingt, kein Werkzeug, das die Gruppe nicht auch von jemand anderem bekäme.
+            Sein einziger unstrittiger Beitrag ist Nahrung, die er selbst herbeizaubert und dann als
+            Gefallen verkauft. Der Rest ist Haltung — und zwar die falsche.
+          </p>
+          <div class="cls-mage-body">
+            <div class="mini">
+              <div class="who">Anforderung an Können</div>
+              <div class="val">
+                Frostblitz. Warten. Frostblitz. Bei Bedarf Eisblock, um dem Heiler zu beweisen,
+                dass man ihn nicht braucht — Sekunden bevor man ihn braucht.
+              </div>
+            </div>
+            <div class="mini">
+              <div class="who">Nutzen für das Team</div>
+              <div class="val">
+                Wasser, Brot, Portale, ein Schaf, das er auf den falschen Gegner wirkt. Alles ersetzbar,
+                alles vorhersehbar, alles begleitet von einem Kommentar über die eigene Leistung.
+              </div>
+            </div>
+            <div class="mini">
+              <div class="who">Wirkung auf den Charakter</div>
+              <div class="val">
+                Belohnung ohne Anstrengung erzeugt Arroganz ohne Grundlage. Der Magier hält seinen
+                Schadensmesser-Platz für ein Charaktermerkmal. Das ist die eigentliche Tragödie.
+              </div>
+            </div>
+            <div class="mini">
+              <div class="who">Verhalten in der Gruppe</div>
+              <div class="val">
+                Zieht zusätzliche Gegner, stirbt, erklärt den Tod, verlangt Wiederbeleben, beschwert sich
+                über die Wartezeit, verlässt die Gruppe vor der letzten Truhe.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DATENBLATT -->
+    <section class="block">
+      <div class="kicker alt">Das Datenblatt</div>
+      <h3 class="title">Direktvergleich, nüchtern betrachtet</h3>
+      <p class="intro">
+        Wir haben versucht, dem Magier eine Kategorie zu geben, in der er gewinnt. Wir haben es ehrlich
+        versucht. Wir haben lange gesucht.
+      </p>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Klasse</th>
+              <th>Was die Gruppe ohne sie verliert</th>
+              <th>Benötigtes Können</th>
+              <th>Wirkung auf den Charakter</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Krieger</strong></td>
+              <td>Den einzigen, der vorne steht</td>
+              <td class="val-ok">Hoch</td>
+              <td>Stählt die Nerven</td>
+            </tr>
+            <tr>
+              <td><strong>Priester</strong></td>
+              <td>Ihr Leben, wörtlich</td>
+              <td class="val-ok">Hoch</td>
+              <td>Fördert Aufmerksamkeit</td>
+            </tr>
+            <tr>
+              <td><strong>Paladin / Schamane</strong></td>
+              <td>Jeden einzelnen Gruppenbuff</td>
+              <td class="val-ok">Mittel bis hoch</td>
+              <td>Erzieht zur Rücksicht</td>
+            </tr>
+            <tr>
+              <td><strong>Schurke</strong></td>
+              <td>Kontrolle und Unterbrechungen</td>
+              <td class="val-ok">Hoch</td>
+              <td>Lehrt Timing und Geduld</td>
+            </tr>
+            <tr>
+              <td><strong>Jäger</strong></td>
+              <td>Sichere Pulls und Kiten</td>
+              <td class="val-ok">Mittel</td>
+              <td>Fördert Fürsorge (Tierhaltung)</td>
+            </tr>
+            <tr>
+              <td><strong>Hexenmeister</strong></td>
+              <td>Flüche, Bannen, Seelensteine, Beschwörung</td>
+              <td class="val-ok">Hoch</td>
+              <td>Schult vorausschauendes Denken</td>
+            </tr>
+            <tr>
+              <td><strong>Druide</strong></td>
+              <td>Die vierte Rolle, die gerade fehlt</td>
+              <td class="val-ok">Hoch</td>
+              <td>Erzeugt Demut durch Vielseitigkeit</td>
+            </tr>
+            <tr class="mage-row">
+              <td><strong>Magier</strong></td>
+              <td>Ein Getränk. Sie können auch Wasser kaufen.</td>
+              <td class="val-bad">Zwei Tasten</td>
+              <td class="val-bad">Fortschreitender Persönlichkeitsverfall</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- SELBSTTEST -->
+    <section class="block" id="selbsttest">
+      <div class="kicker dgr">Kapitel 4 — Der Selbsttest</div>
+      <h3 class="title">Erkennen Sie die Anzeichen — auch bei sich selbst</h3>
+      <p class="intro">
+        Betroffene sind sich ihrer Lage selten bewusst. Genau darin liegt die Tücke: Der Magier hält seinen
+        Zustand für Überlegenheit. Kreuzen Sie ehrlich an, was auf Sie zutrifft. Niemand sieht das Ergebnis
+        außer Ihnen — und das ist auch besser so.
+      </p>
+
+      <div class="quiz">
+        <h4>Fragebogen zur arkanen Selbstgefährdung</h4>
+        <p class="hint">8 Fragen. Ehrlichkeit vorausgesetzt. Sie schummeln hier nur sich selbst an.</p>
+
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich habe schon einmal ungefragt einen Schadensmesser-Screenshot in den Chat gepostet.</span></label>
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich nehme für Portale Trinkgeld und finde das völlig in Ordnung.</span></label>
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich habe den Satz „ohne mich hättet ihr das nie geschafft“ ernst gemeint.</span></label>
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich stand im Feuer und habe anschließend den Heiler dafür verantwortlich gemacht.</span></label>
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich halte Frostblitz für eine anspruchsvolle Rotation.</span></label>
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich habe mein Schaf schon einmal auf ein bereits verzaubertes Ziel geworfen — und dann geschwiegen.</span></label>
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich habe eine Gruppe vor der letzten Truhe verlassen, weil es „eh schon spät“ war.</span></label>
+        <label class="q-item"><input type="checkbox" data-q /><span>Ich denke gerade darüber nach, wie ich diese Seite im Chat widerlegen könnte.</span></label>
+
+        <div class="result" id="result">
+          <div class="score" id="score">Auswertung · 0 von 8 Anzeichen</div>
+          <div class="rtitle" id="rtitle">Unbedenklich. Vorerst.</div>
+          <div class="rtext" id="rtext">
+            Bislang zeigen Sie keine Symptome. Bleiben Sie wachsam, besonders wenn ein Bekannter Ihnen
+            demnächst erzählt, wie entspannt sich ein Magier doch levelt.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ERFAHRUNGSBERICHTE -->
+    <section class="block">
+      <div class="kicker">Kapitel 5 — Stimmen aus der Praxis</div>
+      <h3 class="title">Menschen, die es geschafft haben</h3>
+      <p class="intro">
+        Der Ausstieg ist möglich. Er ist unbequem, er dauert, und er beginnt immer mit demselben Satz:
+        „Ich habe zwei Tasten gedrückt und geglaubt, ich sei der Grund für den Sieg.“ Drei Betroffene
+        haben uns ihre Geschichte erzählt.
+      </p>
+
+      <div class="cards">
+        <div class="card">
+          <div class="quotemark">”</div>
+          <p>
+            Ich war zwei Jahre Magier. Ich dachte, ich trage die Gruppe. Dann bin ich auf Krieger
+            umgestiegen und habe im ersten Dungeon gemerkt, dass ich nie irgendwas getragen habe —
+            ich wurde getragen. Von genau den Leuten, über die ich mich lustig gemacht habe.
+          </p>
+          <div class="by">
+            <div class="avatar">K</div>
+            <div>
+              <div class="n">Anonym, 34</div>
+              <div class="r">clean seit 8 Monaten</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="quotemark">”</div>
+          <p>
+            Meine Gilde hat mich irgendwann konfrontiert. Alle saßen im Sprachchat und einer sagte:
+            „Du redest seit vierzig Minuten über deinen Schaden und hast noch nicht ein Mal jemanden
+            gefragt, wie es ihm geht.“ Das war der Moment. Heute heile ich. Es ist schwerer. Es ist besser.
+          </p>
+          <div class="by">
+            <div class="avatar b">P</div>
+            <div>
+              <div class="n">Anonym, 27</div>
+              <div class="r">clean seit 2 Jahren</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="quotemark">”</div>
+          <p>
+            Der Umstieg auf Hexenmeister war für mich der Beweis. Gleiche Rüstung, gleiche Rolle —
+            und plötzlich musste ich nachdenken, planen und mit anderen sprechen. Da wusste ich:
+            Es lag nie am Stoff. Es lag an mir und daran, was der Magier aus mir gemacht hat.
+          </p>
+          <div class="by">
+            <div class="avatar c">H</div>
+            <div>
+              <div class="n">Anonym, 41</div>
+              <div class="r">clean seit 14 Monaten</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MYTHEN -->
+    <section class="block">
+      <div class="kicker alt">Kapitel 6 — Aufklärung</div>
+      <h3 class="title">Was Magier sagen. Und was stimmt.</h3>
+      <p class="intro">
+        Die Szene arbeitet mit einer erstaunlich stabilen Sammlung von Rechtfertigungen. Wir haben die
+        häufigsten gesammelt und ihnen die Realität gegenübergestellt.
+      </p>
+
+      <div class="myths">
+        <div class="myth">
+          <div class="m"><span class="tagm myth-t">Mythos</span><p>„Ohne Magier gibt es kein Wasser, ihr wärt aufgeschmissen.“</p></div>
+          <div class="f"><span class="tagm fact-t">Fakt</span><p>Wasser gibt es bei jedem Händler in jeder Stadt für kleines Geld. Der Magier hat sich das Monopol auf eine Ware eingeredet, die im Laden nebenan im Regal steht.</p></div>
+        </div>
+
+        <div class="myth">
+          <div class="m"><span class="tagm myth-t">Mythos</span><p>„Schafen ist hochkomplexe Gruppenkontrolle.“</p></div>
+          <div class="f"><span class="tagm fact-t">Fakt</span><p>Der Schurke sappt, der Jäger stellt eine Falle, der Hexenmeister verbannt, der Druide wurzelt und der Priester kontrolliert Gedanken. Alle tun dasselbe, nur leiser. Und keiner erwähnt es hinterher.</p></div>
+        </div>
+
+        <div class="myth">
+          <div class="m"><span class="tagm myth-t">Mythos</span><p>„Ich mache den meisten Schaden, also bin ich am wichtigsten.“</p></div>
+          <div class="f"><span class="tagm fact-t">Fakt</span><p>Schaden ist die einzige Leistung, die ein Add-on automatisch zählt. Bedrohung halten, Unterbrechen, Positionieren, Heilen und Nichtsterben zählt niemand. Der Magier hält deshalb die messbarste Aufgabe für die wertvollste — ein Denkfehler, der die ganze Klasse zusammenfasst.</p></div>
+        </div>
+
+        <div class="myth">
+          <div class="m"><span class="tagm myth-t">Mythos</span><p>„Portale sparen der Gruppe Stunden.“</p></div>
+          <div class="f"><span class="tagm fact-t">Fakt</span><p>Stimmt sogar. Es ist auch der einzige Punkt in diesem Dokument, an dem der Magier recht behält. Er verlangt dafür allerdings Geld, Lob und moralische Anerkennung — für einen Knopf.</p></div>
+        </div>
+
+        <div class="myth">
+          <div class="m"><span class="tagm myth-t">Mythos</span><p>„Das ist doch nur ein Spiel, entspann dich.“</p></div>
+          <div class="f"><span class="tagm fact-t">Fakt</span><p>Dieser Satz kommt ausschließlich von Magiern und ausschließlich dann, wenn sie gerade verloren haben. Vier Minuten vorher war es noch der wichtigste Schadensmesser der Weltgeschichte.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- HILFE -->
+    <section class="block" id="hilfe">
+      <div class="kicker">Kapitel 7 — Der Ausweg</div>
+      <h3 class="title">Es ist nie zu spät. Fast nie.</h3>
+      <p class="intro">
+        Wenn Sie beim Selbsttest mehr als drei Anzeichen angekreuzt haben, ist das kein Grund zur Scham —
+        aber ein Grund zum Handeln. Der Ausstieg gelingt am zuverlässigsten in kleinen Schritten.
+      </p>
+
+      <div class="help">
+        <h3>Sie sind nicht allein.</h3>
+        <p>
+          Täglich melden sich Menschen, die erkannt haben, dass zwei Tasten kein Persönlichkeitsmerkmal sind.
+          Unsere Beratung ist anonym, kostenlos und urteilsfrei — im Gegensatz zu Ihrem Schlachtzugschat.
+        </p>
+        <div class="hotline">0800 – KEIN PORT</div>
+
+        <div class="steps">
+          <div class="step">
+            <div class="sn">SCHRITT 01</div>
+            <p>Deinstallieren Sie den Schadensmesser. Nur für eine Woche. Beobachten Sie, was Sie ohne ihn über sich denken.</p>
+          </div>
+          <div class="step">
+            <div class="sn">SCHRITT 02</div>
+            <p>Spielen Sie eine Instanz als Heiler. Sie werden zum ersten Mal sehen, wie viel Arbeit unsichtbar bleibt.</p>
+          </div>
+          <div class="step">
+            <div class="sn">SCHRITT 03</div>
+            <p>Bedanken Sie sich beim Tank. Ohne Zusatz. Ohne „aber“. Das fällt schwerer, als es klingt.</p>
+          </div>
+          <div class="step">
+            <div class="sn">SCHRITT 04</div>
+            <p>Erstellen Sie einen Hexenmeister. Gleicher Stoff, echtes Handwerk. Die Heilung beginnt genau hier.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAZIT -->
+    <section class="block">
+      <div class="verdict">
+        <div class="score">Abschließende Bewertung der Kommission</div>
+        <h3>Neun Klassen. Acht Daseinsberechtigungen. Ein <span class="arc">Getränkeautomat</span>.</h3>
+        <p>
+          WoW Classic ist ein bemerkenswert ausgewogenes Spiel. Krieger, Priester, Schurke, Jäger, Druide,
+          Paladin, Schamane und Hexenmeister verlangen Verständnis, belohnen Zusammenarbeit und formen
+          Menschen, mit denen man gerne fünf Stunden in einer Höhle verbringt. Der Magier verlangt nichts,
+          belohnt nichts und formt jemanden, der Ihnen anschließend erklärt, warum das Ihre Schuld war.
+          Wir raten dringend ab.
+        </p>
+        <div class="stamp">Nicht empfohlen</div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <div>© 2026 · Bundeszentrale für arkane Aufklärung · Kampagne „Zwei Tasten sind kein Charakter“</div>
+      <div class="small">
+        Satire. Keine echte Behörde, keine echten Studien, keine echte Hotline — und selbstverständlich
+        keine echte Wissenschaft. Alle Zahlen sind frei erfunden, alle Betroffenen ebenso.
+        Magier sind im Grunde in Ordnung. Sie wissen es nur leider selbst am besten.
+        <br />Kein Zusammenhang mit Blizzard Entertainment.
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      var boxes = Array.prototype.slice.call(document.querySelectorAll('[data-q]'));
+      var scoreEl = document.getElementById('score');
+      var titleEl = document.getElementById('rtitle');
+      var textEl = document.getElementById('rtext');
+
+      var levels = [
+        {
+          min: 0, max: 0,
+          title: 'Unbedenklich. Vorerst.',
+          text: 'Bislang zeigen Sie keine Symptome. Bleiben Sie wachsam, besonders wenn ein Bekannter Ihnen demnächst erzählt, wie entspannt sich ein Magier doch levelt.',
+          color: 'var(--ok)'
+        },
+        {
+          min: 1, max: 2,
+          title: 'Erste Auffälligkeiten.',
+          text: 'Noch ist nichts verloren, aber die Richtung stimmt nicht. Spielen Sie in dieser Woche eine Instanz, ohne Ihren eigenen Schaden auch nur einmal zu erwähnen. Sie werden merken, wie schwer das fällt.',
+          color: 'var(--hazard)'
+        },
+        {
+          min: 3, max: 5,
+          title: 'Deutliche Abhängigkeit.',
+          text: 'Ihre Umgebung hat es vermutlich längst bemerkt und schweigt aus Höflichkeit. Beginnen Sie heute mit Schritt 01 im Hilfe-Bereich. Der Schadensmesser darf gehen. Sie dürfen bleiben.',
+          color: '#ffab4d'
+        },
+        {
+          min: 6, max: 7,
+          title: 'Fortgeschrittenes Stadium.',
+          text: 'Der Charakter ist bereits angegriffen. Vermutlich haben Sie beim Lesen dieser Seite mehrfach innerlich widersprochen und dabei an Ihr bestes Recount-Ergebnis gedacht. Genau das ist das Symptom.',
+          color: 'var(--danger)'
+        },
+        {
+          min: 8, max: 8,
+          title: 'Endstufe erreicht.',
+          text: 'Sie sind kein Mensch mehr, der einen Magier spielt. Sie sind ein Magier, der sich an einen Menschen erinnert. Beschwören Sie ein letztes Brot, legen Sie es dem Tank hin, sagen Sie danke — und beginnen Sie neu.',
+          color: 'var(--danger)'
+        }
+      ];
+
+      function update() {
+        var n = boxes.filter(function (b) { return b.checked; }).length;
+        var lvl = levels.filter(function (l) { return n >= l.min && n <= l.max; })[0] || levels[0];
+        scoreEl.textContent = 'Auswertung · ' + n + ' von ' + boxes.length + ' Anzeichen';
+        titleEl.textContent = lvl.title;
+        titleEl.style.color = lvl.color;
+        textEl.textContent = lvl.text;
+      }
+
+      boxes.forEach(function (b) { b.addEventListener('change', update); });
+      update();
+    })();
+  </script>
+
+</body>
+</html>
