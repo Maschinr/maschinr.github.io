@@ -592,7 +592,7 @@ svg { width: 22px; height: 22px; flex: none; display: block; }
   border-color: var(--accent);
   box-shadow: 0 0 0 3px var(--accent-soft);
 }
-.field .hint { font-size: 0.72rem; color: var(--text-3); }
+.field .hint { font-size: 0.72rem; font-weight: 500; color: var(--text-3); }
 .field-row { display: flex; gap: 12px; }
 .field-row .field { flex: 1; min-width: 0; }
 
