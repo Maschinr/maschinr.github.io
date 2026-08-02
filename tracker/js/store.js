@@ -234,6 +234,76 @@ export function stats() {
   };
 }
 
+/* ---- Hochrechnung ---- */
+
+const YEAR_DAYS = 365.25;
+const MONTH_DAYS = YEAR_DAYS / 12;
+
+// Getrackter Zeitraum in Tagen: erste Eröffnung bis letzter Abschluss.
+export function trackedDays() {
+  let first = Infinity;
+  let last = -Infinity;
+  for (const trade of state.trades) {
+    const start = new Date(trade.startAt).getTime();
+    const end = new Date(trade.endAt).getTime();
+    if (isFinite(start)) { first = Math.min(first, start); last = Math.max(last, start); }
+    if (isFinite(end)) { first = Math.min(first, end); last = Math.max(last, end); }
+  }
+  if (!isFinite(first) || !isFinite(last) || last <= first) return 0;
+  return (last - first) / 86400000;
+}
+
+// Schreibt die bisherige Entwicklung auf ein Jahr fort.
+//
+// `cagr` rechnet mit Zinseszins (der Gewinn arbeitet weiter), `linear`
+// unterstellt gleichbleibende Euro-Beträge je Zeitraum. Beides ist eine
+// Fortschreibung des Bisherigen, keine Prognose — bei kurzen Zeiträumen
+// entsprechend wackelig, dafür steht `short`.
+export function projection() {
+  const start = state.startBalance;
+  const balance = currentBalance();
+  const days = trackedDays();
+
+  const base = {
+    days,
+    start,
+    balance,
+    growth: 0,
+    cagr: null,
+    linear: null,
+    monthly: null,
+    projected: null,
+    short: true,
+    ready: false,
+  };
+
+  if (start <= 0 || !state.trades.length) return base;
+
+  // Unter einem Tag lässt sich nichts sinnvoll skalieren — auf einen Tag anheben.
+  const span = Math.max(days, 1);
+  const growth = (balance - start) / start;
+  const periods = YEAR_DAYS / span;
+
+  const linear = growth * periods;
+  let cagr = balance > 0 ? Math.pow(balance / start, periods) - 1 : -1;
+  if (!isFinite(cagr)) cagr = Infinity;
+
+  const monthly = cagr <= -1 ? -1 : Math.pow(balance / start, MONTH_DAYS / span) - 1;
+
+  return {
+    days,
+    start,
+    balance,
+    growth,
+    cagr,
+    linear,
+    monthly: isFinite(monthly) ? monthly : Infinity,
+    projected: balance * (1 + cagr),
+    short: days < 30,
+    ready: true,
+  };
+}
+
 // Kontostand nach jedem geschlossenen Trade, chronologisch.
 export function equityCurve() {
   let balance = state.startBalance;
