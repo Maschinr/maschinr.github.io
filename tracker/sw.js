@@ -1,5 +1,5 @@
 /* Trade Tracker Service Worker — offline-first caching */
-const VERSION = 'trade-tracker-v1';
+const VERSION = 'trade-tracker-v2';
 const ASSETS = [
   './',
   './index.html',

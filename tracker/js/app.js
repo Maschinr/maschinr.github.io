@@ -23,6 +23,7 @@ import {
   getStartBalance,
   setStartBalance,
   stats,
+  projection,
   equityCurve,
   monthlyResults,
   resultsBySymbol,
@@ -38,6 +39,9 @@ const modalRoot = document.getElementById('modal-root');
 
 const euro = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR' });
 const euro0 = new Intl.NumberFormat('de-DE', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+const euroCompact = new Intl.NumberFormat('de-DE', {
+  style: 'currency', currency: 'EUR', notation: 'compact', maximumFractionDigits: 1,
+});
 const dec = new Intl.NumberFormat('de-DE', { maximumFractionDigits: 2 });
 
 // Formatter mit fester Nachkommastellenzahl, nach Bedarf angelegt.
@@ -83,6 +87,30 @@ function fmtPercent(value, digits = 1) {
   const pct = value * 100;
   const sign = pct > 0.049 ? '+' : pct < -0.049 ? '−' : '';
   return `${sign}${fixed(Math.abs(pct), digits)} %`;
+}
+
+// Wie fmtPercent, hält aber auch die absurd großen Werte einer Hochrechnung
+// über einen kurzen Zeitraum lesbar.
+function fmtPercentLarge(value) {
+  if (value === null || value === undefined || Number.isNaN(value)) return '—';
+  const pct = value * 100;
+  const sign = pct > 0 ? '+' : pct < 0 ? '−' : '';
+  const abs = Math.abs(pct);
+  if (abs >= 1e6) return pct < 0 ? '< −1 Mio. %' : '> +1 Mio. %';
+  if (abs >= 1000) return `${sign}${dec.format(Math.round(abs))} %`;
+  if (abs >= 100) return `${sign}${fixed(abs, 0)} %`;
+  return fmtPercent(value, 1);
+}
+
+// Zeitraum in der jeweils passenden Einheit.
+function fmtSpan(days) {
+  if (days < 1) return 'unter einem Tag';
+  if (days < 90) {
+    const d = Math.round(days);
+    return `${d} ${d === 1 ? 'Tag' : 'Tagen'}`;
+  }
+  if (days < 2 * 365) return `${fixed(days / (365.25 / 12), 1)} Monaten`;
+  return `${fixed(days / 365.25, 1)} Jahren`;
 }
 
 function fmtDuration(minutes) {
@@ -572,6 +600,9 @@ function renderStats() {
 
       ${equityChart()}
 
+      <div class="section-head"><h2>Hochrechnung</h2></div>
+      ${projectionCard()}
+
       <div class="section-head"><h2>Kennzahlen</h2></div>
       <div class="stat-grid">
         ${stat(String(s.count), s.count === 1 ? 'Trade' : 'Trades')}
@@ -590,6 +621,48 @@ function renderStats() {
       <div class="section-head"><h2>Je Monat</h2></div>
       <div class="list">${monthBars()}</div>
     </main>`);
+}
+
+// Bisherige Rendite auf ein Jahr hochgerechnet.
+function projectionCard() {
+  const p = projection();
+
+  if (!p.ready) {
+    return h(`
+      <div class="card info-card">
+        <p class="muted">Für die Hochrechnung wird ein Startkapital größer als 0 € benötigt — hinterlege es unter „Mehr“.</p>
+      </div>`);
+  }
+
+  // Bei sehr kurzen Zeiträumen wird die Fortschreibung astronomisch — gekappt,
+  // damit die Karte lesbar bleibt.
+  const money = (value) => {
+    if (!isFinite(value)) return '—';
+    const abs = Math.abs(value);
+    if (abs >= 1e12) return value < 0 ? '< −1 Bio. €' : '> 1 Bio. €';
+    if (abs >= 1e6) return euroCompact.format(value);
+    return fmt(value);
+  };
+
+  return h(`
+    <div class="balance-hero ${toneClass(p.cagr)}">
+      <span class="label">Rendite p. a.</span>
+      <span class="amount">${fmtPercentLarge(p.cagr)}</span>
+      <span class="sub">${fmtPercent(p.growth)} in ${fmtSpan(p.days)} · mit Zinseszins hochgerechnet</span>
+      <div class="hero-split">
+        <div><span class="${toneClass(p.linear)}">${fmtPercentLarge(p.linear)}</span><small>p. a. ohne Zinseszins</small></div>
+        <div><span class="${toneClass(p.monthly)}">${fmtPercentLarge(p.monthly)}</span><small>Ø je Monat</small></div>
+      </div>
+      <div class="hero-split">
+        <div><span>${money(p.balance)}</span><small>Kontostand heute</small></div>
+        <div><span class="${toneClass(p.projected - p.balance)}">${money(p.projected)}</span><small>in 12 Monaten</small></div>
+      </div>
+      <p class="projection-note">
+        Fortschreibung der bisherigen Entwicklung, keine Prognose.${p.short
+          ? ' Der Zeitraum ist noch kurz — der Wert schwankt entsprechend stark.'
+          : ''}
+      </p>
+    </div>`);
 }
 
 // Kontoverlauf nach jedem geschlossenen Trade.
