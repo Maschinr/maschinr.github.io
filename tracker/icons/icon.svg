@@ -1,0 +1,21 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#6b83f7"/>
+      <stop offset="1" stop-color="#3b51d4"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+  <!-- Kerzen: Docht + Körper -->
+  <g stroke="#ffffff" stroke-width="12" stroke-linecap="round">
+    <path d="M150 138 v236"/>
+    <path d="M256 106 v300"/>
+    <path d="M362 154 v212"/>
+  </g>
+  <rect x="126" y="196" width="48" height="126" rx="14" fill="#ff6169"/>
+  <rect x="232" y="150" width="48" height="150" rx="14" fill="#ffffff"/>
+  <rect x="338" y="212" width="48" height="118" rx="14" fill="#21c791"/>
+  <!-- aufsteigende Linie -->
+  <path d="M120 400 L206 356 L292 384 L400 300" fill="none" stroke="#ffffff" stroke-width="16"
+        stroke-linecap="round" stroke-linejoin="round" opacity="0.9"/>
+</svg>
