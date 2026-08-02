@@ -22,8 +22,11 @@ import {
   currentBalance,
   getStartBalance,
   setStartBalance,
+  getTargetBalance,
+  setTargetBalance,
   stats,
   projection,
+  targetForecast,
   equityCurve,
   monthlyResults,
   resultsBySymbol,
@@ -111,6 +114,19 @@ function fmtSpan(days) {
   }
   if (days < 2 * 365) return `${fixed(days / (365.25 / 12), 1)} Monaten`;
   return `${fixed(days / 365.25, 1)} Jahren`;
+}
+
+// Wie fmtSpan, aber im Nominativ — für eine Dauer als eigenständige Angabe.
+function fmtSpanNom(days) {
+  if (days === null || days === undefined || !isFinite(days)) return '—';
+  if (days < 1) return 'unter 1 Tag';
+  if (days < 90) {
+    const d = Math.round(days);
+    return `${d} ${d === 1 ? 'Tag' : 'Tage'}`;
+  }
+  if (days < 2 * 365) return `${fixed(days / (365.25 / 12), 1)} Monate`;
+  if (days < 365.25 * 500) return `${fixed(days / 365.25, 1)} Jahre`;
+  return 'über 500 Jahre';
 }
 
 function fmtDuration(minutes) {
@@ -211,6 +227,7 @@ const icons = {
   chevron: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>',
   download: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M4 21h16"/></svg>',
   upload: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 21h16"/></svg>',
+  target: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.3" fill="currentColor" stroke="none"/></svg>',
   wallet: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-2"/><path d="M21 7H5a2 2 0 0 0 0 4h16"/><circle cx="17" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>',
 };
 
@@ -372,11 +389,12 @@ function dayList(byDay, prefix) {
   const rows = keys.map((key) => {
     const list = byDay.get(key);
     const pl = sumPl(list);
+    const wins = list.filter((t) => tradePl(t) > 0).length;
     return h(`
       <div class="card row trade-row" data-open-day="${key}">
         <div class="row-main">
           <div class="row-title">${esc(dayLabelShort(key))}</div>
-          <div class="row-sub">${list.length} ${list.length === 1 ? 'Trade' : 'Trades'} · Gebühren ${fmt(list.reduce((s, t) => s + t.fees, 0))}</div>
+          <div class="row-sub">${list.length} ${list.length === 1 ? 'Trade' : 'Trades'} · ${wins} im Plus</div>
         </div>
         <div class="row-end" style="flex-direction:row">
           <span class="pill ${toneClass(pl)}">${fmtSigned(pl)}</span>
@@ -394,8 +412,10 @@ function dayList(byDay, prefix) {
 function renderDay(key) {
   const list = tradesOfDay(key);
   const pl = sumPl(list);
-  const fees = list.reduce((s, t) => s + t.fees, 0);
   const wins = list.filter((t) => tradePl(t) > 0).length;
+  const results = list.map(tradePl);
+  const average = results.length ? pl / results.length : 0;
+  const best = results.length ? Math.max(...results) : 0;
 
   return h(`
     <header class="topbar">
@@ -410,10 +430,11 @@ function renderDay(key) {
         <span class="label">Tagesergebnis</span>
         <span class="amount">${fmtSigned(pl)}</span>
         <span class="sub">${list.length} ${list.length === 1 ? 'Trade' : 'Trades'} · ${wins} im Plus</span>
+        ${list.length ? h(`
         <div class="hero-split">
-          <div><span>${fmt(fees)}</span><small>Gebühren</small></div>
-          <div><span class="${toneClass(pl + fees)}">${fmtSigned(pl + fees)}</span><small>vor Gebühren</small></div>
-        </div>
+          <div><span class="${toneClass(average)}">${fmtSigned(average)}</span><small>Ø je Trade</small></div>
+          <div><span class="${toneClass(best)}">${fmtSigned(best)}</span><small>bester Trade</small></div>
+        </div>`) : ''}
       </div>
       ${list.length === 0
         ? h(`<div class="empty small"><p class="empty-text">Keine Trades an diesem Tag.</p></div>`)
@@ -526,7 +547,7 @@ function renderTradeDetail(id) {
         <span class="amount">${fmtSigned(pl)}</span>
         <span class="sub">${fmtPercent(ret)} auf den Einsatz</span>
         <div class="hero-split">
-          <div><span>${fmt(trade.fees)}</span><small>Gebühren</small></div>
+          <div><span>${fmt(trade.entry)}</span><small>Einsatz</small></div>
           <div><span class="${toneClass(move)}">${fmtPercent(move, 2)}</span><small>Basiswert</small></div>
         </div>
       </div>
@@ -540,9 +561,7 @@ function renderTradeDetail(id) {
           <div><span class="dt">Eröffnet</span><span class="dd">${esc(dayLabelShort(trade.startAt.slice(0, 10)))}, ${timeLabel(trade.startAt)}</span></div>
           <div><span class="dt">Geschlossen</span><span class="dd">${esc(dayLabelShort(trade.endAt.slice(0, 10)))}, ${timeLabel(trade.endAt)}</span></div>
           <div><span class="dt">Haltedauer</span><span class="dd">${fmtDuration(tradeDuration(trade))}</span></div>
-          <div><span class="dt">Gebühren</span><span class="dd">${fmt(trade.fees)}</span></div>
-          <div><span class="dt">Brutto</span><span class="dd ${toneClass(pl + trade.fees)}">${fmtSigned(pl + trade.fees)}</span></div>
-          <div><span class="dt">Netto</span><span class="dd ${toneClass(pl)}">${fmtSigned(pl)}</span></div>
+          <div><span class="dt">Rendite</span><span class="dd ${toneClass(ret)}">${fmtPercent(ret, 2)}</span></div>
         </div>
         ${trade.note ? `<p class="muted">${esc(trade.note)}</p>` : ''}
       </div>
@@ -576,6 +595,9 @@ function renderStats() {
           <p class="empty-title">Noch nichts auszuwerten</p>
           <p class="empty-text">Erfasse Trades, um Ergebnis, Trefferquote und Verlauf zu sehen.</p>
         </div>
+        ${getTargetBalance() > 0 ? h(`
+          <div class="section-head"><h2>Zielbetrag</h2></div>
+          ${targetCard()}`) : ''}
       </main>`);
   }
 
@@ -594,7 +616,7 @@ function renderStats() {
         <span class="sub">Startkapital ${fmt(start)}${start > 0 ? ` · ${fmtPercent(growth)}` : ''}</span>
         <div class="hero-split">
           <div><span class="${toneClass(s.total)}">${fmtSigned(s.total)}</span><small>Gewinn/Verlust</small></div>
-          <div><span>${fmt(s.fees)}</span><small>Gebühren gesamt</small></div>
+          <div><span>${fmtPercent(s.winRate, 0).replace('+', '')}</span><small>Trefferquote</small></div>
         </div>
       </div>
 
@@ -602,6 +624,9 @@ function renderStats() {
 
       <div class="section-head"><h2>Hochrechnung</h2></div>
       ${projectionCard()}
+
+      <div class="section-head"><h2>Zielbetrag</h2></div>
+      ${targetCard()}
 
       <div class="section-head"><h2>Kennzahlen</h2></div>
       <div class="stat-grid">
@@ -660,6 +685,85 @@ function projectionCard() {
       <p class="projection-note">
         Fortschreibung der bisherigen Entwicklung, keine Prognose.${p.short
           ? ' Der Zeitraum ist noch kurz — der Wert schwankt entsprechend stark.'
+          : ''}
+      </p>
+    </div>`);
+}
+
+// Restdauer bis zum Zielbetrag — bei gleichbleibender Rendite.
+function targetCard() {
+  const t = targetForecast();
+
+  if (t.status === 'none') {
+    return h(`
+      <div class="card info-card">
+        <p class="muted">Noch kein Zielbetrag hinterlegt. Sobald du einen festlegst, steht hier, wie lange es mit der bisherigen Rendite bis dahin dauert.</p>
+        <button class="btn primary block" data-action="set-target">${icons.target}<span>Zielbetrag festlegen</span></button>
+      </div>`);
+  }
+
+  const head = (amount, sub) => h(`
+    <span class="label">Zielbetrag ${fmt(t.target)}</span>
+    <span class="amount">${amount}</span>
+    <span class="sub">${sub}</span>`);
+
+  if (t.status === 'reached') {
+    return h(`
+      <div class="balance-hero pos">
+        ${head('Ziel erreicht', `Kontostand ${fmt(t.balance)} — ${fmtSigned(t.balance - t.target)} über dem Ziel.`)}
+        <div class="bar-track" style="margin-top:14px"><span class="bar-fill pos" style="width:100%"></span></div>
+      </div>`);
+  }
+
+  const progressBar = h(`
+    <div class="bar-track" style="margin-top:14px">
+      <span class="bar-fill pos" style="width:${(t.progress * 100).toFixed(1)}%"></span>
+    </div>`);
+
+  if (t.status === 'nodata') {
+    return h(`
+      <div class="balance-hero">
+        ${head('—', `Noch ${fmt(t.remaining)} bis zum Ziel.`)}
+        ${progressBar}
+        <p class="projection-note">Für die Restdauer werden ein Startkapital größer als 0 € und mindestens ein Trade benötigt.</p>
+      </div>`);
+  }
+
+  if (t.status === 'stalled') {
+    return h(`
+      <div class="balance-hero neg">
+        ${head('nicht in Sicht', `Noch ${fmt(t.remaining)} bis zum Ziel.`)}
+        ${progressBar}
+        <p class="projection-note">Die bisherige Entwicklung zeigt kein Wachstum — so fortgeschrieben wird der Zielbetrag nie erreicht.</p>
+      </div>`);
+  }
+
+  const days = t.days ?? t.daysLinear;
+  const dateLabel = t.date
+    ? t.date.toLocaleDateString('de-DE', days < 90
+      ? { day: 'numeric', month: 'long', year: 'numeric' }
+      : { month: 'long', year: 'numeric' })
+    : null;
+
+  const dateSub = dateLabel
+    ? `voraussichtlich ${days < 90 ? 'am' : 'im'} ${esc(dateLabel)} erreicht`
+    : 'Der Termin liegt außerhalb des darstellbaren Zeitraums.';
+
+  return h(`
+    <div class="balance-hero">
+      ${head(`noch ${fmtSpanNom(days)}`, dateSub)}
+      ${progressBar}
+      <div class="hero-split">
+        <div><span>${fmt(t.remaining)}</span><small>noch nötig</small></div>
+        <div><span>${fmtPercent(t.progress, 0).replace('+', '')}</span><small>vom Weg geschafft</small></div>
+      </div>
+      <div class="hero-split">
+        <div><span class="${toneClass(t.monthlyRate)}">${fmtPercentLarge(t.monthlyRate)}</span><small>Ø je Monat</small></div>
+        <div><span>${fmtSpanNom(t.daysLinear)}</span><small>ohne Zinseszins</small></div>
+      </div>
+      <p class="projection-note">
+        Gerechnet mit der bisherigen Rendite und Zinseszins — eine Fortschreibung, keine Prognose.${t.short
+          ? ' Der getrackte Zeitraum ist noch kurz, die Restdauer schwankt entsprechend stark.'
           : ''}
       </p>
     </div>`);
@@ -752,6 +856,7 @@ function monthBars() {
 function renderSettings() {
   const start = getStartBalance();
   const balance = currentBalance();
+  const target = getTargetBalance();
   const count = getTrades().length;
 
   return h(`
@@ -765,6 +870,16 @@ function renderSettings() {
           <div><span class="${toneClass(balance - start)}">${fmt(balance)}</span><small>aktueller Stand</small></div>
         </div>
         <button class="btn primary block" data-action="set-balance">${icons.wallet}<span>Startkapital ändern</span></button>
+      </div>
+
+      <div class="card info-card">
+        <h2>Zielbetrag</h2>
+        <p class="muted">Kontostand, den du erreichen möchtest. Unter „Auswertung“ steht dann, wie lange es mit der bisherigen Rendite noch bis dahin dauert.</p>
+        <div class="hero-split" style="margin-top:0;border-top:none;padding-top:0">
+          <div><span>${target > 0 ? fmt(target) : '—'}</span><small>Zielbetrag</small></div>
+          <div><span>${target > balance ? fmt(target - balance) : '—'}</span><small>noch nötig</small></div>
+        </div>
+        <button class="btn primary block" data-action="set-target">${icons.target}<span>${target > 0 ? 'Zielbetrag ändern' : 'Zielbetrag festlegen'}</span></button>
       </div>
 
       <div class="card info-card">
@@ -865,7 +980,6 @@ function tradeForm(trade) {
     endAt: trade ? trade.endAt : nowLocal,
     entry: trade ? trade.entry : '',
     exit: trade ? trade.exit : '',
-    fees: trade ? trade.fees : '',
     note: trade ? trade.note : '',
   };
 
@@ -896,21 +1010,19 @@ function tradeForm(trade) {
       <input name="endAt" type="datetime-local" value="${esc(v.endAt)}" required />
     </label>
 
-    <div class="field-row">
-      <label class="field">
-        <span>Startwert (€)</span>
-        <input name="entry" type="text" inputmode="decimal" placeholder="0,00" value="${esc(inputVal(v.entry))}" required />
-      </label>
-      <label class="field">
-        <span>Endwert (€)</span>
-        <input name="exit" type="text" inputmode="decimal" placeholder="0,00" value="${esc(inputVal(v.exit))}" required />
-      </label>
-    </div>
-    <label class="field">
-      <span>Gebühren (€)</span>
-      <input name="fees" type="text" inputmode="decimal" placeholder="0,00" value="${esc(inputVal(v.fees))}" />
+    <div class="field">
+      <div class="field-row">
+        <label class="field" style="margin-bottom:0">
+          <span>Startwert (€)</span>
+          <input name="entry" type="text" inputmode="decimal" placeholder="0,00" value="${esc(inputVal(v.entry))}" required />
+        </label>
+        <label class="field" style="margin-bottom:0">
+          <span>Endwert (€)</span>
+          <input name="exit" type="text" inputmode="decimal" placeholder="0,00" value="${esc(inputVal(v.exit))}" required />
+        </label>
+      </div>
       <span class="hint">Startwert = Einsatz beim Öffnen, Endwert = Wert beim Schließen.</span>
-    </label>
+    </div>
 
     <label class="field">
       <span>Notiz</span>
@@ -934,7 +1046,7 @@ function previewResult(data, form) {
     target.className = 'value';
     return;
   }
-  const pl = exit - entry - Math.abs(num(data.fees, 0));
+  const pl = exit - entry;
   const ret = entry ? pl / entry : 0;
   target.textContent = `${fmtSigned(pl)}  (${fmtPercent(ret)})`;
   target.className = `value ${toneClass(pl)}`;
@@ -957,7 +1069,6 @@ function openTradeModal(trade) {
         endAt: data.endAt,
         entry,
         exit,
-        fees: num(data.fees, 0),
         note: data.note,
       };
 
@@ -1031,6 +1142,21 @@ function wireEvents() {
           <span class="hint">Kontostand zum Zeitpunkt, ab dem du trackst.</span>
         </label>`), (data) => {
         setStartBalance(data.startBalance);
+        render();
+      });
+    });
+  }
+
+  const targetBtn = app.querySelector('[data-action="set-target"]');
+  if (targetBtn) {
+    targetBtn.addEventListener('click', () => {
+      openModal('Zielbetrag', h(`
+        <label class="field">
+          <span>Zielbetrag (€)</span>
+          <input name="targetBalance" type="text" inputmode="decimal" placeholder="0,00" value="${esc(inputVal(getTargetBalance() || ''))}" />
+          <span class="hint">Kontostand, den du erreichen möchtest. 0 oder leer blendet das Ziel wieder aus.</span>
+        </label>`), (data) => {
+        setTargetBalance(data.targetBalance);
         render();
       });
     });

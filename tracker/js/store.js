@@ -4,7 +4,7 @@
 
 const STORAGE_KEY = 'trade-tracker-v1';
 
-let state = { startBalance: 0, trades: [] };
+let state = { startBalance: 0, targetBalance: 0, trades: [] };
 
 function uid() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
@@ -45,13 +45,14 @@ export function load() {
       if (parsed && Array.isArray(parsed.trades)) {
         state = {
           startBalance: num(parsed.startBalance, 0),
+          targetBalance: Math.max(num(parsed.targetBalance, 0), 0),
           trades: parsed.trades.map(normalize),
         };
       }
     }
   } catch (err) {
     console.warn('Konnte gespeicherte Daten nicht lesen:', err);
-    state = { startBalance: 0, trades: [] };
+    state = { startBalance: 0, targetBalance: 0, trades: [] };
   }
   return state;
 }
@@ -75,6 +76,17 @@ export function setStartBalance(value) {
   save();
 }
 
+/* ---- Zielbetrag ---- */
+
+export function getTargetBalance() {
+  return state.targetBalance;
+}
+
+export function setTargetBalance(value) {
+  state.targetBalance = Math.max(num(value, 0), 0);
+  save();
+}
+
 /* ---- Trades ---- */
 
 function normalize(t) {
@@ -88,7 +100,6 @@ function normalize(t) {
     endAt,
     entry: num(t.entry, 0),
     exit: num(t.exit, 0),
-    fees: Math.abs(num(t.fees, 0)),
     note: String(t.note || '').trim(),
   };
 }
@@ -142,7 +153,7 @@ export function removeTrade(id) {
 
 // Realisiertes Ergebnis eines Trades in Euro.
 export function tradePl(trade) {
-  return trade.exit - trade.entry - trade.fees;
+  return trade.exit - trade.entry;
 }
 
 // Rendite bezogen auf das eingesetzte Kapital.
@@ -198,10 +209,6 @@ export function totalPl() {
   return sumPl(state.trades);
 }
 
-export function totalFees() {
-  return state.trades.reduce((sum, t) => sum + t.fees, 0);
-}
-
 export function currentBalance() {
   return state.startBalance + totalPl();
 }
@@ -230,7 +237,6 @@ export function stats() {
     grossWin,
     grossLoss,
     profitFactor: grossLoss > 0 ? grossWin / grossLoss : null,
-    fees: totalFees(),
   };
 }
 
@@ -304,6 +310,80 @@ export function projection() {
   };
 }
 
+/* ---- Zielbetrag ---- */
+
+// Wie lange dauert es bei der bisherigen Rendite noch bis zum Zielbetrag?
+//
+// `days` schreibt mit Zinseszins fort: aus der bisherigen Entwicklung wird ein
+// täglicher Wachstumsfaktor abgeleitet und weitergerechnet. `daysLinear`
+// unterstellt stattdessen einen gleichbleibenden Euro-Zuwachs je Tag.
+//
+// status: 'none'    — kein Ziel hinterlegt
+//         'reached' — Ziel bereits erreicht
+//         'nodata'  — Startkapital oder Trades fehlen
+//         'stalled' — bisher kein Wachstum, das Ziel wird so nie erreicht
+//         'ready'   — Restdauer berechnet
+export function targetForecast() {
+  const target = state.targetBalance;
+  const start = state.startBalance;
+  const balance = currentBalance();
+  const days = trackedDays();
+
+  const base = {
+    status: 'none',
+    target,
+    start,
+    balance,
+    remaining: Math.max(target - balance, 0),
+    progress: 0,
+    days: null,
+    daysLinear: null,
+    date: null,
+    dailyRate: 0,
+    monthlyRate: 0,
+    perDay: 0,
+    short: days < 30,
+  };
+
+  if (target <= 0) return base;
+
+  base.progress = target > start
+    ? Math.min(Math.max((balance - start) / (target - start), 0), 1)
+    : 1;
+
+  if (balance >= target) return { ...base, status: 'reached', progress: 1, remaining: 0 };
+  if (start <= 0 || balance <= 0 || !state.trades.length) return { ...base, status: 'nodata' };
+
+  // Unter einem Tag lässt sich nichts sinnvoll skalieren — auf einen Tag anheben.
+  const span = Math.max(days, 1);
+  const dailyRate = Math.pow(balance / start, 1 / span) - 1;
+  const perDay = (balance - start) / span;
+
+  base.dailyRate = isFinite(dailyRate) ? dailyRate : 0;
+  base.monthlyRate = isFinite(dailyRate) ? Math.pow(1 + dailyRate, MONTH_DAYS) - 1 : Infinity;
+  base.perDay = perDay;
+
+  if (base.dailyRate <= 0 && perDay <= 0) return { ...base, status: 'stalled' };
+
+  const compound = base.dailyRate > 0
+    ? Math.log(target / balance) / Math.log(1 + base.dailyRate)
+    : NaN;
+  const linear = perDay > 0 ? (target - balance) / perDay : NaN;
+
+  const reference = isFinite(compound) ? compound : linear;
+
+  return {
+    ...base,
+    status: 'ready',
+    days: isFinite(compound) ? compound : null,
+    daysLinear: isFinite(linear) ? linear : null,
+    // Jenseits von tausend Jahren ist ein Datum nur noch Zahlensalat.
+    date: isFinite(reference) && reference < YEAR_DAYS * 1000
+      ? new Date(Date.now() + reference * 86400000)
+      : null,
+  };
+}
+
 // Kontostand nach jedem geschlossenen Trade, chronologisch.
 export function equityCurve() {
   let balance = state.startBalance;
@@ -362,6 +442,7 @@ export function importData(json) {
   if (!parsed || !Array.isArray(parsed.trades)) throw new Error('Keine Trades in der Datei gefunden.');
   state = {
     startBalance: num(parsed.startBalance, 0),
+    targetBalance: Math.max(num(parsed.targetBalance, 0), 0),
     trades: parsed.trades.map(normalize),
   };
   save();
@@ -369,7 +450,7 @@ export function importData(json) {
 }
 
 export function clearAll() {
-  state = { startBalance: 0, trades: [] };
+  state = { startBalance: 0, targetBalance: 0, trades: [] };
   try {
     localStorage.removeItem(STORAGE_KEY);
   } catch (err) {
