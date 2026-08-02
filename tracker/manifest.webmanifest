@@ -1,0 +1,17 @@
+{
+  "name": "Trade Tracker",
+  "short_name": "Trades",
+  "description": "Trades erfassen, im Kalender auswerten und Gewinn/Verlust sowie Kontostand im Blick behalten.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f2f4f7",
+  "theme_color": "#4c6ef5",
+  "lang": "de",
+  "categories": ["finance", "productivity", "utilities"],
+  "icons": [
+    { "src": "icons/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icons/maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
